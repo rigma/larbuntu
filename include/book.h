@@ -11,7 +11,7 @@ typedef struct book_t {
 	char *title;             // Le titre du livre
 	char *author;            // L'auteur du livre
 	unsigned short entry;    // L'entrée du livre dans un thème
-	unsigned int effective;  // Le nombre d'exemplaires disponibles
+	unsigned int effective;  // Le nombre d'exemplaires possédés
 	unsigned int free;       // Le nombre d'exemplaires libres
 	unsigned int *d_borrows; // Les durées d'emprunt
 	struct book_t *previous; // L'élément précédent
@@ -29,5 +29,21 @@ typedef struct {
 	unsigned int next;
 	book_t *first;
 } book_db;
+
+/**
+ * @fn book_init()
+ * @brief Initialise une structure book_t vide en mémoire
+ * @author Romain FAILLA
+ * @return book_t*
+ */
+book_t *book_init();
+
+/**
+ * @fn book_free(book_t *book)
+ * @brief Libére la structure désignée de la mémoire
+ * @author Romain FAILLA
+ * @param book_t *book : la structure à libérer
+ */
+void book_free(book_t *book);
 
 #endif
