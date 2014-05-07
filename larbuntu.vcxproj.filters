@@ -24,15 +24,9 @@
     <ClInclude Include="include\member.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="include\dirent.h">
-      <Filter>Fichiers d%27en-tête</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
-      <Filter>Fichiers sources</Filter>
-    </ClCompile>
-    <ClCompile Include="src\book.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

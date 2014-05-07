@@ -78,13 +78,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\book.h" />
-    <ClInclude Include="include\dirent.h" />
     <ClInclude Include="include\member.h" />
     <ClInclude Include="include\thema.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
-    <ClCompile Include="src\book.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
