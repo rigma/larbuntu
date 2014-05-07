@@ -81,6 +81,9 @@
     <ClInclude Include="include\member.h" />
     <ClInclude Include="include\thema.h" />
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.c" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
