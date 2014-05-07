@@ -46,4 +46,13 @@ book_t *book_init();
  */
 void book_free(book_t *book);
 
+/**
+ * @fn book_initDatabase(char *name)
+ * @brief Initialise la base de donnée des livres
+ * @author Romain FAILLA
+ * @param char *name : le nom de la base de donnée
+ * @return book_db*
+ */
+book_db *book_initDatabase(char *name);
+
 #endif
