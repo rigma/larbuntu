@@ -30,4 +30,21 @@ typedef struct {
 	member_t *first;
 } member_db;
 
+/**
+ * @fn member_init()
+ * @brief Initialise une structure member_t en mémoire
+ * @author Olivier NISOLE
+ * @return member_t *
+ */
+member_t *member_init();
+
+/**
+* @fn member_free()
+* @brief Libère une structure member_t en mémoire
+* @author Olivier NISOLE
+* @param (member_t* member)
+*/
+void member_free(member_t* member);
+
 #endif
+
