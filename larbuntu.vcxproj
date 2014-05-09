@@ -88,6 +88,7 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="src\book.c" />
     <ClCompile Include="src\member.c" />
+    <ClCompile Include="src\thema.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

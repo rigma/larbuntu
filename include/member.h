@@ -28,6 +28,7 @@ typedef struct {
 	unsigned int size;
 	unsigned int next;
 	member_t *first;
+	member_t **members;
 } member_db;
 
 /**

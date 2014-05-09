@@ -12,7 +12,7 @@
  */
 typedef struct thema_t {
 	unsigned int id;          // L'entrée dans la base de donnée
-	char key[3];              // La clé du thème
+	char key[4];              // La clé du thème
 	unsigned int size;        // Le nombre de livres dans le thème (maximum 1000)
 	book_t *books;            // Les livres du thème
 	struct thema_t *previous; // L'élément précédent
@@ -29,6 +29,24 @@ typedef struct {
 	unsigned int size;
 	unsigned int next;
 	thema_t *first;
+	thema_t **themas;
 } thema_db;
+
+/**
+ * @fn thema_init()
+ * @brief Initialise une structure thema_t vide en mémoire
+ * @author Romain FAILLA
+ * @param char *key : la clé d'identification du thème
+ * @return thema_t*
+ */
+thema_t *thema_init(char *key);
+
+/**
+ * @fn thema_free(thema_t *thema)
+ * @brief Libère une structure thema_t de la mémoire
+ * @author Romain FAILLA
+ * @param thema_t *thema
+ */
+void thema_free(thema_t *thema);
 
 #endif
