@@ -28,6 +28,7 @@ typedef struct {
 	unsigned int size;
 	unsigned int next;
 	book_t *first;
+	book_t **books;
 } book_db;
 
 /**
@@ -48,11 +49,20 @@ void book_free(book_t *book);
 
 /**
  * @fn book_initDatabase(char *name)
- * @brief Initialise la base de donnée des livres
+ * @brief Initialise la base de données des livres
  * @author Romain FAILLA
  * @param char *name : le nom de la base de donnée
  * @return book_db*
  */
 book_db *book_initDatabase(char *name);
+
+/**
+ * @fn book_freeDatabase(book_db *db)
+ * @brief Libère la base de données des livres de la mémoire et la sauvegarde sur un fichier binaire
+ * @author Romain FAILLA
+ * @param book_db *db : la base de données à libérer
+ * @return char
+ */
+char book_freeDatabase(book_db *db);
 
 #endif
