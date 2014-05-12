@@ -37,7 +37,7 @@ book_db *book_initDatabase(char *name)
 	FILE *f = NULL;
 	book_db *db = (book_db*) malloc(sizeof(book_db));
 	book_t *book = NULL, *previous =  NULL;
-	char *filename = (char*) malloc((7 + strlen(name)) * sizeof(char));
+	char *filename = (char*) malloc((strlen(name) + 7) * sizeof(char));
 	unsigned int i = 0;
 	
 	// Tampons de lecture
@@ -45,7 +45,14 @@ book_db *book_initDatabase(char *name)
 	unsigned char buffer_char = 0;
 
 	if (db == NULL || filename == NULL)
+	{
+		if (db != NULL)
+			free(db);
+		else if (filename != NULL)
+			free(filename);
+
 		return NULL;
+	}
 
 	strcpy(filename, "db/");
 	strcat(filename, name);
@@ -54,11 +61,21 @@ book_db *book_initDatabase(char *name)
 	f = fopen(filename, "rb");
 	if (f == NULL)
 	{
-		// On initialise une base de donnée vide
+		// On initialise une base de données vide
+		db->name = (char*) malloc((strlen(name) + 1) * sizeof(char));
+		if (db->name == NULL)
+		{
+			free(db);
+			free(filename);
+
+			return NULL;
+		}
 		strcpy(db->name, name);
+
 		db->size = 0;
 		db->next = 0;
 		db->first = NULL;
+		db->books = NULL;
 	}
 	else
 	{
@@ -99,18 +116,25 @@ book_db *book_initDatabase(char *name)
 		db->books = (book_t**) malloc(db->size * sizeof(book_t*));
 		if (db->books == NULL)
 		{
-			free(buffer_str);
 			free(db->name);
 			free(db);
 
+			free(filename);
+			fclose(f);
+
 			return NULL;
+		}
+		else
+		{
+			for (i = 0 ; i < db->size ; i++)
+				db->books[i] = NULL;
 		}
 
 		for (i = 0 ; i < db->size ; i++)
 		{
 			book = book_init();
 
-			// Lecture de l'id
+			// Lecture de l'identifiant
 			fread(&book->id, sizeof(unsigned int), 1, f);
 			
 			// Lecture du titre
@@ -175,7 +199,7 @@ book_db *book_initDatabase(char *name)
 				book->previous = previous;
 			}
 
-			db->books[i] = book;
+			db->books[book->id] = book;
 			previous = book;
 		}
 	}
