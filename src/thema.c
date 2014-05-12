@@ -172,3 +172,93 @@ thema_db *thema_initDatabase(book_db *db_books, char *name)
 
 	return db;
 }
+
+char thema_freeDatabase(thema_db *db)
+{
+	// Variables de travail
+	FILE *f = NULL;
+	thema_t *thema = NULL;
+	char *filename = (char*) malloc((7 + strlen(db->name)) * sizeof(char));
+	unsigned int i = 0;
+	unsigned short j = 0;
+
+	// Tampons d'écriture
+	char *buffer_str = NULL;
+	int *buffer_int = NULL;
+	char buffer_char = 0;
+
+	if (db == NULL || filename == NULL)
+		return 0;
+
+	// Ouverture du fichier
+	strcpy(filename, "db/");
+	strcat(filename, db->name);
+	strcat(filename, ".db");
+
+	f = fopen(filename, "wb");
+	if (f == NULL)
+	{
+		free(filename);
+
+		return 0;
+	}
+
+	// Ecriture de l'entête
+	buffer_str = (char*) malloc(9 * sizeof(char));
+	if (buffer_str == NULL)
+	{
+		free(filename);
+		fclose(f);
+
+		return 0;
+	}
+
+	strcpy(buffer_str, LARBUNTU);
+	fwrite(buffer_str, sizeof(char), 9, f);
+	free(buffer_str);
+
+	buffer_char = THEMA;
+	fwrite(&buffer_char, sizeof(char), 1, f);
+
+	// Ecriture des éléments d'entête de la base de données
+	fwrite(&db->size, sizeof(unsigned int), 1, f);
+	fwrite(&db->next, sizeof(unsigned int), 1, f);
+
+	// Ecriture des éléments de la base de données
+	for (i = 0 ; i < db->size ; i++)
+	{
+		thema = db->themas[i];
+
+		// Ecriture de l'identifiant du thème
+		fwrite(&thema->id, sizeof(int), 1, f);
+
+		// Ecriture de la clé du thème
+		fwrite(thema->key, sizeof(char), 4, f);
+
+		// Ecriture du nombre de livres enregistrés dans le thème
+		fwrite(&thema->size, sizeof(unsigned short), 1, f);
+
+		// Ecriture des identifiants enregistrés dans le thème
+		buffer_int = (int*) malloc(thema->size * sizeof(int));
+		// TODO : gérer le cas où buffer_int a comme adresse NULL
+
+		for (j = 0 ; j < thema->size ; j++)
+			buffer_int[j] = thema->books[j]->id;
+
+		fwrite(buffer_int, sizeof(int), thema->size, f);
+
+		// Libération de l'élément
+		thema->next->previous = NULL;
+
+		thema_free(thema);
+		db->themas[i] = NULL;
+	}
+
+	fclose(f);
+
+	free(db->name);
+	free(db->themas);
+	free(db);
+
+	return 1;
+}

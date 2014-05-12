@@ -58,4 +58,13 @@ void thema_free(thema_t *thema);
  */
 thema_db *thema_initDatabase(book_db *db_books, char *name);
 
+/**
+ * @fn thema_freeDatabase(thema_db *db)
+ * @brief Libère la base de données des thèmes de la mémoire et l'enregistre dans un fichier
+ * @author Romain FAILLA
+ * @param thema_db *db : la base de données à libérer
+ * @return char
+ */
+char thema_freeDatabase(thema_db *db);
+
 #endif

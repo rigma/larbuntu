@@ -232,21 +232,32 @@ char book_freeDatabase(book_db *db)
 
 	f = fopen(filename, "wb");
 	if (f == NULL)
+	{
+		free(filename);
+
 		return 0;
+	}
 
 	// Ecriture de l'entête
 	buffer_str = (char*) malloc(9 * sizeof(char));
 	if (buffer_str == NULL)
 	{
+		free(filename);
 		fclose(f);
 
 		return 0;
 	}
 
+	strcpy(buffer_str, LARBUNTU);
 	fwrite(buffer_str, sizeof(char), 9, f);
+	free(buffer_str);
 
 	buffer_char = BOOK;
 	fwrite(&buffer_char, sizeof(char), 1, f);
+
+	// Ecriture des entêtes de la base de données
+	fwrite(&db->size, sizeof(unsigned int), 1, f);
+	fwrite(&db->next, sizeof(unsigned int), 1, f);
 
 	// Ecriture des entrées de la base de données
 	for (i = 0 ; i < db->size ; i++)
