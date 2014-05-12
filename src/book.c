@@ -210,7 +210,7 @@ book_db *book_initDatabase(char *name)
 	return db;
 }
 
-char book_freeDatabase(book_db *db)
+char book_saveDatabase(book_db *db)
 {
 	// Variables de travail
 	FILE *f = NULL;
@@ -218,7 +218,7 @@ char book_freeDatabase(book_db *db)
 	char *filename = (char*) malloc((7 + strlen(db->name)) * sizeof(char));
 	unsigned int i = 0;
 
-	// Tampon d'écriture
+	// Tampons d'écriture
 	char *buffer_str = NULL;
 	char buffer_char = 0;
 
@@ -255,7 +255,93 @@ char book_freeDatabase(book_db *db)
 	buffer_char = BOOK;
 	fwrite(&buffer_char, sizeof(char), 1, f);
 
-	// Ecriture des entêtes de la base de données
+	// Ecriture des informations sur la taille de base de données
+	fwrite(&db->size, sizeof(unsigned int), 1, f);
+	fwrite(&db->next, sizeof(unsigned int), 1, f);
+
+	// Ecriture des entrées de la base de données
+	for (i = 0; i < db->size; i++)
+	{
+		book = db->books[i];
+
+		// Ecriture de l'entrée dans la base de données
+		fwrite(&book->id, sizeof(unsigned int), 1, f);
+
+		// Ecriture du titre du livre
+		buffer_char = strlen(book->title) + 1;
+		fwrite(&buffer_char, sizeof(char), 1, f);
+		fwrite(book->title, sizeof(char), buffer_char + 1, f);
+
+		// Ecriture de l'auteur du livre
+		buffer_char = strlen(book->author) + 1;
+		fwrite(&buffer_char, sizeof(char), 1, f);
+		fwrite(book->author, sizeof(char), buffer_char + 1, f);
+
+		// Ecriture de l'entrée du livre dans le thème
+		fwrite(&book->entry, sizeof(unsigned short), 1, f);
+
+		// Ecriture de l'entrée du nombre de livres possédés
+		fwrite(&book->effective, sizeof(unsigned int), 1, f);
+
+		// Ecriture de l'entrée du nombre de livres disponibles
+		fwrite(&book->free, sizeof(unsigned int), 1, f);
+
+		// Ecriture des durées d'emprunt
+		fwrite(book->d_borrows, sizeof(unsigned int), book->effective, f);
+	}
+
+	free(filename);
+	fclose(f);
+
+	return 1;
+}
+
+char book_freeDatabase(book_db *db)
+{
+	// Variables de travail
+	FILE *f = NULL;
+	book_t *book = NULL;
+	char *filename = (char*) malloc((7 + strlen(db->name)) * sizeof(char));
+	unsigned int i = 0;
+
+	// Tampons d'écriture
+	char *buffer_str = NULL;
+	char buffer_char = 0;
+
+	if (db == NULL || filename == NULL)
+		return 0;
+
+	// Ouverture du fichier
+	strcpy(filename, "db/");
+	strcat(filename, db->name);
+	strcat(filename, ".db");
+
+	f = fopen(filename, "wb");
+	if (f == NULL)
+	{
+		free(filename);
+
+		return 0;
+	}
+
+	// Ecriture de l'entête
+	buffer_str = (char*) malloc(9 * sizeof(char));
+	if (buffer_str == NULL)
+	{
+		free(filename);
+		fclose(f);
+
+		return 0;
+	}
+
+	strcpy(buffer_str, LARBUNTU);
+	fwrite(buffer_str, sizeof(char), 9, f);
+	free(buffer_str);
+
+	buffer_char = BOOK;
+	fwrite(&buffer_char, sizeof(char), 1, f);
+
+	// Ecriture des informations sur la taille de la base de données
 	fwrite(&db->size, sizeof(unsigned int), 1, f);
 	fwrite(&db->next, sizeof(unsigned int), 1, f);
 
@@ -296,6 +382,7 @@ char book_freeDatabase(book_db *db)
 		db->books[i] = NULL;
 	}
 
+	free(filename);
 	fclose(f);
 
 	free(db->name);

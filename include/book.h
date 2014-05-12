@@ -57,6 +57,15 @@ void book_free(book_t *book);
 book_db *book_initDatabase(char *name);
 
 /**
+ * @fn book_saveDatabase(book_db *db)
+ * @brief Sauvegarde une base de données des livres dans un fichier binaire
+ * @author Romain FAILLA
+ * @param book_db *db : la base de données à sauvegarder
+ * @return char
+ */
+char book_saveDatabase(book_db *db);
+
+/**
  * @fn book_freeDatabase(book_db *db)
  * @brief Libère la base de données des livres de la mémoire et la sauvegarde sur un fichier binaire
  * @author Romain FAILLA

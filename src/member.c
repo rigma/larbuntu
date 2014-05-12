@@ -9,6 +9,8 @@ member_t *member_init()
 
 	member->name = NULL;
 	member->forname = NULL;
+	member->adress = NULL;
+	member->email = NULL;
 	member->profession = NULL;
 	member->n_borrows = 0;
 	member->borrows = NULL;

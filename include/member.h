@@ -1,6 +1,8 @@
 #ifndef MEMBER_H
 #define MEMBER_H
 
+#include "contact.h"
+
 #define MAX_BORROWS_MEMBER 3
 
 /**
@@ -11,6 +13,8 @@
 typedef struct member_t {
 	char *name;                // Le nom de l'adhérent
 	char *forname;             // Le prénom de l'adhérent
+	adress_t *adress;          // L'adresse postale
+	email_t *email;            // L'adresse courriel
 	char *profession;          // La profession de l'adhérent
 	unsigned char n_borrows;   // Le nombre de livres empruntés
 	char **borrows;            // Les codes des livres empruntés
