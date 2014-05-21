@@ -21,7 +21,7 @@ member_t *member_init()
 	return member;
 }
 
-void member_free(member_t* member)
+void member_free(member_t *member)
 {
 	free(member->name);
 	free(member->forname);
@@ -44,22 +44,22 @@ member_t* member_register(member_t* member)
 	fgets(tempo, sizeof(tempo), stdin);
 	fflush(stdin);
 
-	member->name = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
+	m->name = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
 
 	printf("Veuillez entrer le prenom de l adhherent");
 	fgets(tempo, sizeof(tempo), stdin);
 	fflush(stdin);
 
-	member->forname = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
+	m->forname = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
 
 	// saisie postale
-	member->email = email_register(member->email);
+	m->email = email_register(NULL);
 
 	printf("Veuillez entrer la profession de l adherent");
 	fgets(tempo, sizeof(tempo), stdin);
 	fflush(stdin);
 
-	member->profession = (char*)malloc((1 + strlen(tempo)) * sizeof(char)); 
+	m->profession = (char*)malloc((1 + strlen(tempo)) * sizeof(char)); 
 
-	return member;
+	return m;
 }

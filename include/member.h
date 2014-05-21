@@ -49,7 +49,7 @@ member_t *member_init();
 * @author Olivier NISOLE
 * @param (member_t* member)
 */
-void member_free(member_t* member);
+void member_free(member_t *member);
 
 /**
 * @fn member_register()
@@ -58,7 +58,7 @@ void member_free(member_t* member);
 * @param (member_t* member)
 * @return member_t*
 */
-member_t* member_register(member_t* member);
+member_t* member_register(member_t *member);
 
 #endif
 

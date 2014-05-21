@@ -86,24 +86,36 @@ void email_free(email_t *email)
 email_t* email_register(email_t *email)
 {
 	email_t *e = NULL;
-	char tempo[200];
+	char id[200], hostname[200];
 
 	if (email == NULL)
-		e = email_init();
+	{
+		printf("Veuillez entrer l'identifiant de l'adresse mail : ");
+		fgets(id, sizeof(id), stdin);
+		fflush(stdin);
+
+		printf("Veuillez entrer le domaine de l'adresse mail : ");
+		fgets(hostname, sizeof(id), stdin);
+		fflush(stdin);
+
+		e = email_init(id, hostname);
+	}
 	else
+	{
 		e = email;
 
-	printf("Veuillez entrer l'id de votre adresse mail");
-	fgets(tempo, sizeof(tempo), stdin);
-	fflush(stdin);
+		printf("Veuillez entrer l'identifiant de l'adresse mail : ");
+		fgets(id, sizeof(id), stdin);
+		fflush(stdin);
 
-	e->id = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
+		e->id = (char*) malloc((1 + strlen(id)) * sizeof(char));
 
-	printf("Veuillez entrer le domaine de votre adresse mail");
-	fgets(tempo, sizeof(tempo), stdin);
-	fflush(stdin);
+		printf("Veuillez entrer le domaine de l'adresse mail : ");
+		fgets(hostname, sizeof(hostname), stdin);
+		fflush(stdin);
 
-	e->hostname = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
+		e->hostname = (char*) malloc((1 + strlen(hostname)) * sizeof(char));
+	}
 
 	return e;
 }
