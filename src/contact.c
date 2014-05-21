@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 
 #include <contact.h>
@@ -80,4 +81,41 @@ void email_free(email_t *email)
 	free(email->id);
 	free(email->hostname);
 	free(email);
+}
+
+email_t* email_register(email_t *email)
+{
+	email_t *e = NULL;
+	char tempo[200];
+
+	if (email == NULL)
+		e = email_init();
+	else
+		e = email;
+
+	printf("Veuillez entrer l'id de votre adresse mail");
+	fgets(tempo, sizeof(tempo), stdin);
+	fflush(stdin);
+
+	e->id = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
+
+	printf("Veuillez entrer le domaine de votre adresse mail");
+	fgets(tempo, sizeof(tempo), stdin);
+	fflush(stdin);
+
+	e->hostname = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
+
+	return e;
+}
+
+adress_t* adress_register(adress_t *adress)
+{
+	adress_t *a = NULL;
+	char tempo[200];
+
+	if (adress == NULL)
+		a = adress_init();
+	else
+		a = adress;
+
 }

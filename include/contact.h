@@ -76,4 +76,20 @@ email_t *email_init(char *id, char *hostname);
  */
 void email_free(email_t *email);
 
+/**
+ * @fn email_register(email_t *email)
+  * @brief Saisie de l'adresse e-mail de l'utilisateur
+   * @author Olivier NISOLE
+   * @param email_t *email
+   */
+email_t* email_register(email_t *email);
+
+/**
+* @fn adress_register(adress_t *adress)
+* @brief Saisie de l'adresse de l'utilisateur
+* @author olivier NISOLE
+* @param adress_t *adress
+*/
+adress_t* adress_register(adress_t *adress);
+
 #endif

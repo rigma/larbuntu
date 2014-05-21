@@ -51,5 +51,14 @@ member_t *member_init();
 */
 void member_free(member_t* member);
 
+/**
+* @fn member_register()
+* @brief Saisie les données d'une variable de type member_t
+* @author Olivier NISOLE
+* @param (member_t* member)
+* @return member_t*
+*/
+member_t* member_register(member_t* member);
+
 #endif
 
