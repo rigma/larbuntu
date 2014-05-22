@@ -7,11 +7,12 @@
  * @author Romain FAILLA
  */
 typedef enum {
-	TRAIL,
-	ROAD,
-	STREET,
-	AVENUE,
-	BOULEVARD
+	TRAIL = 0,
+	ROAD = 1,
+	STREET = 2,
+	AVENUE = 3,
+	BOULEVARD = 4,
+	PLACE = 5
 } path_t;
 
 /**

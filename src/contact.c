@@ -109,12 +109,14 @@ email_t* email_register(email_t *email)
 		fflush(stdin);
 
 		e->id = (char*) malloc((1 + strlen(id)) * sizeof(char));
+		strcpy(e->id, id);
 
 		printf("Veuillez entrer le domaine de l'adresse mail : ");
 		fgets(hostname, sizeof(hostname), stdin);
 		fflush(stdin);
 
 		e->hostname = (char*) malloc((1 + strlen(hostname)) * sizeof(char));
+		strcpy(e->hostname, hostname);
 	}
 
 	return e;
@@ -123,11 +125,63 @@ email_t* email_register(email_t *email)
 adress_t* adress_register(adress_t *adress)
 {
 	adress_t *a = NULL;
-	char tempo[200];
+	char city[200], pathname[200];
+	unsigned short number = 0;
+	unsigned int postal = 0;
+	path_t type;
 
 	if (adress == NULL)
-		a = adress_init();
+	{
+		printf("Veuillez entrer le numero de la rue : ");
+		scanf("%d", number);
+
+		printf("Veuillez entrer le numero correspondant au type de rue\n(0 = Chemin ; 1 = Route ; 2 = Rue ; 3 = Avenue ; 4 = Boulevard ; 5 = Place)\n");
+		scanf("%d", &type);
+
+		printf("Veuillez entrer le nom du chemin : ");
+		fgets(pathname, sizeof(pathname), stdin);
+		fflush(stdin);
+
+		printf("Veuillez entrer le code postal : ");
+		scanf("%d", postal);
+
+		printf("Veuillez entrer la ville : ");
+		fgets(city, sizeof(city), stdin);
+		fflush(stdin);
+
+		a = adress_init(number, type, pathname, postal, city);
+	}
 	else
+	{
 		a = adress;
+
+		printf("Veuillez entrer le numero de la rue : ");
+		scanf("%d", number);
+		a->number = number;
+
+		printf("Veuillez entrer le numero correspondant au type de rue\n(0 = Chemin ; 1 = Route ; 2 = Rue ; 3 = Avenue ; 4 = Boulevard ; 5 = Place)\n");
+		scanf("%d", type);
+		a->path = type;
+
+		printf("Veuillez entrer le nom du chemin : ");
+		fgets(pathname, sizeof(pathname), stdin);
+		fflush(stdin);
+
+		a->pathname = (char*) malloc((1 + strlen(pathname)) * sizeof(char));
+		strcpy(a->pathname, pathname);
+		
+		printf("Veuillez entrer le code postal : ");
+		scanf("%d", postal);
+		a->postal = postal;
+
+		printf("Veuillez entrer la ville : ");
+		fgets(city, sizeof(city), stdin);
+		fflush(stdin);
+
+		a->city = (char*) malloc((1 + strlen(city)) * sizeof(char));
+		strcpy(a->city, city);
+	}
+
+	return a;
 
 }

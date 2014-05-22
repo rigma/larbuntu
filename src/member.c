@@ -1,5 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
+
 #include <member.h>
 
 member_t *member_init()
@@ -45,14 +47,16 @@ member_t* member_register(member_t* member)
 	fflush(stdin);
 
 	m->name = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
+	strcpy(m->name, tempo);
 
 	printf("Veuillez entrer le prenom de l adhherent");
 	fgets(tempo, sizeof(tempo), stdin);
 	fflush(stdin);
 
 	m->forname = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
+	strcpy(m->forname, tempo);
 
-	// saisie postale
+	m->adress = adress_register(NULL);
 	m->email = email_register(NULL);
 
 	printf("Veuillez entrer la profession de l adherent");
@@ -60,6 +64,7 @@ member_t* member_register(member_t* member)
 	fflush(stdin);
 
 	m->profession = (char*)malloc((1 + strlen(tempo)) * sizeof(char)); 
+	strcpy(m->profession, tempo);
 
 	return m;
 }
