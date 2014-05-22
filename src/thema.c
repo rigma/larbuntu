@@ -84,6 +84,35 @@ char thema_add(thema_db *db, thema_t *thema)
 	return 1;
 }
 
+char thema_remove(thema_db *db, unsigned int index)
+{
+	thema_t *thema = NULL, *previous = NULL, *next = NULL;
+
+	if (db == NULL || index >= db->size)
+		return 0;
+
+	thema = db->themas[index];
+
+	if (thema == NULL)
+		return 0;
+	else
+	{
+		previous = thema->previous;
+		next = thema->next;
+
+		previous->next = next;
+		next->previous = previous;
+
+		db->themas[index] = NULL;
+		thema_free(thema);
+
+		db->next = index;
+		db->deleted++;
+	}
+
+	return 1;
+}
+
 thema_db *thema_initDatabase(book_db *db_books, char *name)
 {
 	// Variables de travail
@@ -187,43 +216,47 @@ thema_db *thema_initDatabase(book_db *db_books, char *name)
 
 		for (i = 0 ; i < db->size ; i++)
 		{
-			thema = thema_init();
-			
-			// Lecture de l'identifiant
-			fread(&thema->id, sizeof(unsigned int), 1, f);
-
-			// Lecture de la clé du thème
-			fread(&thema->key, sizeof(char), 4, f);
-
-			// Lecture du nombre de livres dans le thème
-			fread(&thema->size, sizeof(unsigned short), 1, f);
-
-			// Lecture des identifiants des livres présents dans le thème
-			thema->books = (book_t**)malloc(thema->size * sizeof(book_t*));
-			if (thema->books == NULL) // TODO : améliorer la gestion du cas où thema->books n'a pas pu être initialisé.
+			fread(&buffer_char, sizeof(unsigned char), 1, f);
+			if (buffer_char == VALID)
 			{
-				perror("malloc : thema->books n'a pu etre initialise correctement.\n");
+				thema = thema_init();
 
-				exit(EXIT_FAILURE);
+				// Lecture de l'identifiant
+				fread(&thema->id, sizeof(unsigned int), 1, f);
+
+				// Lecture de la clé du thème
+				fread(&thema->key, sizeof(char), 4, f);
+
+				// Lecture du nombre de livres dans le thème
+				fread(&thema->size, sizeof(unsigned short), 1, f);
+
+				// Lecture des identifiants des livres présents dans le thème
+				thema->books = (book_t**)malloc(thema->size * sizeof(book_t*));
+				if (thema->books == NULL) // TODO : améliorer la gestion du cas où thema->books n'a pas pu être initialisé.
+				{
+					perror("malloc : thema->books n'a pu etre initialise correctement.\n");
+
+					exit(EXIT_FAILURE);
+				}
+
+				for (j = 0; j < thema->size; j++)
+				{
+					fread(&buffer_int, sizeof(unsigned int), 1, f);
+					thema->books[j] = db_books->books[buffer_int];
+				}
+
+				// Création des liens de l'élément au sein de la liste
+				if (i == 0)
+					db->first = thema;
+				else
+				{
+					previous->next = thema;
+					thema->previous = previous;
+				}
+
+				db->themas[thema->id] = thema;
+				previous = thema;
 			}
-
-			for (j = 0 ; j < thema->size ; j++)
-			{
-				fread(&buffer_int, sizeof(unsigned int), 1, f);
-				thema->books[j] = db_books->books[buffer_int];
-			}
-
-			// Création des liens de l'élément au sein de la liste
-			if (i == 0)
-				db->first = thema;
-			else
-			{
-				previous->next = thema;
-				thema->previous = previous;
-			}
-
-			db->themas[thema->id] = thema;
-			previous = thema;
 		}
 	}
 
@@ -290,23 +323,36 @@ char thema_saveDatabase(thema_db *db)
 	{
 		thema = db->themas[i];
 
-		// Ecriture de l'identifiant du thème
-		fwrite(&thema->id, sizeof(int), 1, f);
+		if (thema == NULL)
+		{
+			// Quand l'entrée est nulle, on précise que l'entrée est fausse
+			buffer_char = BAD;
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
+		}
+		else
+		{
+			// Indication que l'entrée est valide
+			buffer_char = VALID;
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
 
-		// Ecriture de la clé du thème
-		fwrite(thema->key, sizeof(char), 4, f);
+			// Ecriture de l'identifiant du thème
+			fwrite(&thema->id, sizeof(int), 1, f);
 
-		// Ecriture du nombre de livres enregistrés dans le thème
-		fwrite(&thema->size, sizeof(unsigned short), 1, f);
+			// Ecriture de la clé du thème
+			fwrite(thema->key, sizeof(char), 4, f);
 
-		// Ecriture des identifiants enregistrés dans le thème
-		buffer_int = (int*)malloc(thema->size * sizeof(int));
-		// TODO : gérer le cas où buffer_int a comme adresse NULL
+			// Ecriture du nombre de livres enregistrés dans le thème
+			fwrite(&thema->size, sizeof(unsigned short), 1, f);
 
-		for (j = 0; j < thema->size; j++)
-			buffer_int[j] = thema->books[j]->id;
+			// Ecriture des identifiants enregistrés dans le thème
+			buffer_int = (int*) malloc(thema->size * sizeof(int));
+			// TODO : gérer le cas où buffer_int a comme adresse NULL
 
-		fwrite(buffer_int, sizeof(int), thema->size, f);
+			for (j = 0 ; j < thema->size;  j++)
+				buffer_int[j] = thema->books[j]->id;
+
+			fwrite(buffer_int, sizeof(int), thema->size, f);
+		}
 	}
 
 	free(filename);
@@ -372,29 +418,42 @@ char thema_freeDatabase(thema_db *db)
 	{
 		thema = db->themas[i];
 
-		// Ecriture de l'identifiant du thème
-		fwrite(&thema->id, sizeof(int), 1, f);
+		if (thema == NULL)
+		{
+			// Quand l'entrée est nulle, on précise que l'entrée est fausse
+			buffer_char = BAD;
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
+		}
+		else
+		{
+			// Indication que l'entrée est valide
+			buffer_char = VALID;
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
 
-		// Ecriture de la clé du thème
-		fwrite(thema->key, sizeof(char), 4, f);
+			// Ecriture de l'identifiant du thème
+			fwrite(&thema->id, sizeof(int), 1, f);
 
-		// Ecriture du nombre de livres enregistrés dans le thème
-		fwrite(&thema->size, sizeof(unsigned short), 1, f);
+			// Ecriture de la clé du thème
+			fwrite(thema->key, sizeof(char), 4, f);
 
-		// Ecriture des identifiants enregistrés dans le thème
-		buffer_int = (int*) malloc(thema->size * sizeof(int));
-		// TODO : gérer le cas où buffer_int a comme adresse NULL
+			// Ecriture du nombre de livres enregistrés dans le thème
+			fwrite(&thema->size, sizeof(unsigned short), 1, f);
 
-		for (j = 0 ; j < thema->size ; j++)
-			buffer_int[j] = thema->books[j]->id;
+			// Ecriture des identifiants enregistrés dans le thème
+			buffer_int = (int*)malloc(thema->size * sizeof(int));
+			// TODO : gérer le cas où buffer_int a comme adresse NULL
 
-		fwrite(buffer_int, sizeof(int), thema->size, f);
+			for (j = 0; j < thema->size; j++)
+				buffer_int[j] = thema->books[j]->id;
 
-		// Libération de l'élément
-		thema->next->previous = NULL;
+			fwrite(buffer_int, sizeof(int), thema->size, f);
 
-		thema_free(thema);
-		db->themas[i] = NULL;
+			// Libération de l'élément
+			thema->next->previous = NULL;
+
+			thema_free(thema);
+			db->themas[i] = NULL;
+		}
 	}
 
 	free(filename);

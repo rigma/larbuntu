@@ -84,6 +84,7 @@
     <ClInclude Include="include\dbio.h" />
     <ClInclude Include="include\member.h" />
     <ClInclude Include="include\thema.h" />
+    <ClInclude Include="include\utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c" />
@@ -91,6 +92,7 @@
     <ClCompile Include="src\contact.c" />
     <ClCompile Include="src\member.c" />
     <ClCompile Include="src\thema.c" />
+    <ClCompile Include="src\utils.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

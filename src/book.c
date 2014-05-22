@@ -89,6 +89,35 @@ char book_add(book_db *db, book_t *book)
 	return 1;
 }
 
+char book_remove(book_db *db, unsigned int index)
+{
+	book_t *book = NULL, *previous = NULL, *next = NULL;
+
+	if (db == NULL || index >= db->size)
+		return 0;
+
+	book = db->books[index];
+
+	if (book == NULL)
+		return 0;
+	else
+	{
+		previous = book->previous;
+		next = book->next;
+
+		previous->next = next;
+		next->previous = previous;
+
+		db->books[index] = NULL;
+		book_free(book);
+
+		db->next = index;
+		db->deleted++;
+	}
+
+	return 1;
+}
+
 book_db *book_initDatabase(char *name)
 {
 	// Variables de travail
@@ -151,7 +180,7 @@ book_db *book_initDatabase(char *name)
 		}
 
 		fread(buffer_str, sizeof(char), 9, f);
-		fread(&buffer_char, sizeof(char), 1, f);
+		fread(&buffer_char, sizeof(unsigned char), 1, f);
 
 		if (strcmp(buffer_str, LARBUNTU) || buffer_char != BOOK)
 		{
@@ -192,75 +221,80 @@ book_db *book_initDatabase(char *name)
 
 		for (i = 0 ; i < db->size ; i++)
 		{
-			book = book_init();
-
-			// Lecture de l'identifiant
-			fread(&book->id, sizeof(unsigned int), 1, f);
-			
-			// Lecture du titre
-			fread(&buffer_char, sizeof(char), 1, f);
-
-			book->title = (char*) malloc(buffer_char * sizeof(char));
-			if (book->title == NULL)
+			// Lecture si l'entrée n'est pas valide
+			fread(&buffer_char, sizeof(unsigned char), 1, f);
+			if (buffer_char == VALID)
 			{
-				book_free(book);
-				free(db);
+				book = book_init();
 
-				free(filename);
-				fclose(f);
+				// Lecture de l'identifiant
+				fread(&book->id, sizeof(unsigned int), 1, f);
 
-				return NULL;
+				// Lecture du titre
+				fread(&buffer_char, sizeof(char), 1, f);
+
+				book->title = (char*)malloc(buffer_char * sizeof(char));
+				if (book->title == NULL)
+				{
+					book_free(book);
+					free(db);
+
+					free(filename);
+					fclose(f);
+
+					return NULL;
+				}
+
+				fread(book->title, sizeof(char), buffer_char, f);
+
+				// Lecture du nom de l'auteur
+				fread(&buffer_char, sizeof(char), 1, f);
+
+				book->author = (char*)malloc(buffer_char * sizeof(char));
+				if (book->author == NULL)
+				{
+					book_free(book);
+					free(db);
+
+					free(filename);
+					fclose(f);
+
+					return NULL;
+				}
+
+				// Lecture de l'entrée dans le thème du livre
+				fread(&book->entry, sizeof(short), 1, f);
+
+				// Lecture du nombre d'exemplaires du livre possédés
+				fread(&book->effective, sizeof(unsigned int), 1, f);
+
+				// Lecture du nombre d'exemplaires du livre possédés
+				fread(&book->free, sizeof(unsigned int), 1, f);
+
+				// Lecture des durées d'emprunt
+				book->d_borrows = (unsigned int*) malloc(book->effective * sizeof(unsigned int));
+				if (book->d_borrows == NULL)
+				{
+					book_free(book);
+					free(db);
+
+					return NULL;
+				}
+
+				fread(book->d_borrows, sizeof(unsigned int), book->effective, f);
+
+				// Création des liens de la chaîne
+				if (i == 0)
+					db->first = book;
+				else
+				{
+					previous->next = book;
+					book->previous = previous;
+				}
+
+				db->books[book->id] = book;
+				previous = book;
 			}
-
-			fread(book->title, sizeof(char), buffer_char, f);
-
-			// Lecture du nom de l'auteur
-			fread(&buffer_char, sizeof(char), 1, f);
-
-			book->author = (char*) malloc(buffer_char * sizeof(char));
-			if (book->author == NULL)
-			{
-				book_free(book);
-				free(db);
-
-				free(filename);
-				fclose(f);
-
-				return NULL;
-			}
-
-			// Lecture de l'entrée dans le thème du livre
-			fread(&book->entry, sizeof(short), 1, f);
-
-			// Lecture du nombre d'exemplaires du livre possédés
-			fread(&book->effective, sizeof(unsigned int), 1, f);
-
-			// Lecture du nombre d'exemplaires du livre possédés
-			fread(&book->free, sizeof(unsigned int), 1, f);
-
-			// Lecture des durées d'emprunt
-			book->d_borrows = (unsigned int*) malloc(book->effective * sizeof(unsigned int));
-			if (book->d_borrows == NULL)
-			{
-				book_free(book);
-				free(db);
-
-				return NULL;
-			}
-
-			fread(book->d_borrows, sizeof(unsigned int), book->effective, f);
-
-			// Création des liens de la chaîne
-			if (i == 0)
-				db->first = book;
-			else
-			{
-				previous->next = book;
-				book->previous = previous;
-			}
-
-			db->books[book->id] = book;
-			previous = book;
 		}
 	}
 
@@ -325,30 +359,43 @@ char book_saveDatabase(book_db *db)
 	{
 		book = db->books[i];
 
-		// Ecriture de l'entrée dans la base de données
-		fwrite(&book->id, sizeof(unsigned int), 1, f);
+		if (book == NULL)
+		{
+			// Lorsque l'entrée est nulle, on précise que l'entrée n'est pas valide
+			buffer_char = BAD;
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
+		}
+		else
+		{
+			// Ecriture de l'entrée valide
+			buffer_char = VALID;
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
 
-		// Ecriture du titre du livre
-		buffer_char = strlen(book->title) + 1;
-		fwrite(&buffer_char, sizeof(char), 1, f);
-		fwrite(book->title, sizeof(char), buffer_char + 1, f);
+			// Ecriture de l'entrée dans la base de données
+			fwrite(&book->id, sizeof(unsigned int), 1, f);
 
-		// Ecriture de l'auteur du livre
-		buffer_char = strlen(book->author) + 1;
-		fwrite(&buffer_char, sizeof(char), 1, f);
-		fwrite(book->author, sizeof(char), buffer_char + 1, f);
+			// Ecriture du titre du livre
+			buffer_char = strlen(book->title) + 1;
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
+			fwrite(book->title, sizeof(char), buffer_char + 1, f);
 
-		// Ecriture de l'entrée du livre dans le thème
-		fwrite(&book->entry, sizeof(unsigned short), 1, f);
+			// Ecriture de l'auteur du livre
+			buffer_char = strlen(book->author) + 1;
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
+			fwrite(book->author, sizeof(char), buffer_char + 1, f);
 
-		// Ecriture de l'entrée du nombre de livres possédés
-		fwrite(&book->effective, sizeof(unsigned int), 1, f);
+			// Ecriture de l'entrée du livre dans le thème
+			fwrite(&book->entry, sizeof(unsigned short), 1, f);
 
-		// Ecriture de l'entrée du nombre de livres disponibles
-		fwrite(&book->free, sizeof(unsigned int), 1, f);
+			// Ecriture de l'entrée du nombre de livres possédés
+			fwrite(&book->effective, sizeof(unsigned int), 1, f);
 
-		// Ecriture des durées d'emprunt
-		fwrite(book->d_borrows, sizeof(unsigned int), book->effective, f);
+			// Ecriture de l'entrée du nombre de livres disponibles
+			fwrite(&book->free, sizeof(unsigned int), 1, f);
+
+			// Ecriture des durées d'emprunt
+			fwrite(book->d_borrows, sizeof(unsigned int), book->effective, f);
+		}
 	}
 
 	free(filename);
@@ -412,36 +459,49 @@ char book_freeDatabase(book_db *db)
 	{
 		book = db->books[i];
 
-		// Ecriture de l'entrée dans la base de données
-		fwrite(&book->id, sizeof(unsigned int), 1, f);
+		if (book == NULL)
+		{
+			// Quand l'entrée est nulle, on précise que l'entrée est fausse
+			buffer_char = BAD;
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
+		}
+		else
+		{
+			// Ecriture de l'entrée valide
+			buffer_char = VALID;
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
 
-		// Ecriture du titre du livre
-		buffer_char = strlen(book->title) + 1;
-		fwrite(&buffer_char, sizeof(char), 1, f);
-		fwrite(book->title, sizeof(char), buffer_char + 1, f);
+			// Ecriture de l'entrée dans la base de données
+			fwrite(&book->id, sizeof(unsigned int), 1, f);
 
-		// Ecriture de l'auteur du livre
-		buffer_char = strlen(book->author) + 1;
-		fwrite(&buffer_char, sizeof(char), 1, f);
-		fwrite(book->author, sizeof(char), buffer_char + 1, f);
+			// Ecriture du titre du livre
+			buffer_char = strlen(book->title) + 1;
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
+			fwrite(book->title, sizeof(char), buffer_char + 1, f);
 
-		// Ecriture de l'entrée du livre dans le thème
-		fwrite(&book->entry, sizeof(unsigned short), 1, f);
+			// Ecriture de l'auteur du livre
+			buffer_char = strlen(book->author) + 1;
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
+			fwrite(book->author, sizeof(char), buffer_char + 1, f);
 
-		// Ecriture de l'entrée du nombre de livres possédés
-		fwrite(&book->effective, sizeof(unsigned int), 1, f);
+			// Ecriture de l'entrée du livre dans le thème
+			fwrite(&book->entry, sizeof(unsigned short), 1, f);
 
-		// Ecriture de l'entrée du nombre de livres disponibles
-		fwrite(&book->free, sizeof(unsigned int), 1, f);
+			// Ecriture de l'entrée du nombre de livres possédés
+			fwrite(&book->effective, sizeof(unsigned int), 1, f);
 
-		// Ecriture des durées d'emprunt
-		fwrite(book->d_borrows, sizeof(unsigned int), book->effective, f);
+			// Ecriture de l'entrée du nombre de livres disponibles
+			fwrite(&book->free, sizeof(unsigned int), 1, f);
 
-		// Libération de l'élément de la mémoire
-		book->next->previous = NULL;
+			// Ecriture des durées d'emprunt
+			fwrite(book->d_borrows, sizeof(unsigned int), book->effective, f);
 
-		book_free(book);
-		db->books[i] = NULL;
+			// Libération de l'élément de la mémoire
+			book->next->previous = NULL;
+
+			book_free(book);
+			db->books[i] = NULL;
+		}
 	}
 
 	free(filename);

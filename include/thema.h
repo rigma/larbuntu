@@ -53,11 +53,21 @@ void thema_free(thema_t *thema);
  * @fn thema_add(thema_db *db, thema_t *thema)
  * @brief Ajoute un thème dans la base de données des thèmes
  * @author Romain FAILLA
- * @brief thema_db *db : la base de données des thèmes
- * @brief thema_t *thema : le thème à ajouter
+ * @param thema_db *db : la base de données des thèmes
+ * @param thema_t *thema : le thème à ajouter
  * @return char
  */
 char thema_add(thema_db *db, thema_t *thema);
+
+/**
+ * @fn thema_remove(thema_db *db, unsigned int index)
+ * @brief Retire un thème de la base de données des thèmes
+ * @author Romain FAILLA
+ * @param thema_db *db : la base de données des thèmes
+ * @param unsigned int index : l'index à enlever de la base de données
+ * @return char
+ */
+char thema_remove(thema_db *db, unsigned int index);
 
 /**
  * @fn thema_initDatabase(book_db *db_books, char *name)

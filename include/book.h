@@ -63,7 +63,7 @@ char book_add(book_db *db, book_t *book);
  * @brief Enlève le livre à l'index id de la base de données des livres
  * @author Romain FAILLA
  * @param book_db *db : la base de données des livres
- * @param unsigned int id : l'index à enlever dans l'adresse
+ * @param unsigned int id : l'index à enlever dans la base de données
  * @return char
  */
 char book_remove(book_db *db, unsigned int id);
