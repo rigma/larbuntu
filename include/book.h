@@ -27,6 +27,7 @@ typedef struct {
 	char *name;
 	unsigned int size;
 	unsigned int next;
+	unsigned int deleted;
 	book_t *first;
 	book_t **books;
 } book_db;
@@ -46,6 +47,26 @@ book_t *book_init();
  * @param book_t *book : la structure à libérer
  */
 void book_free(book_t *book);
+
+/**
+ * @fn book_add(book_db *db, book_t *book)
+ * @brief Ajoute un livre dans la base de données des livres au prochain index libre
+ * @author Romain FAILLA
+ * @param book_db *db : la base de données des livres
+ * @param book_t *book : le livre à ajouter
+ * @return char
+ */
+char book_add(book_db *db, book_t *book);
+
+/**
+ * @fn book_remove(book_db *db, unsigned int id)
+ * @brief Enlève le livre à l'index id de la base de données des livres
+ * @author Romain FAILLA
+ * @param book_db *db : la base de données des livres
+ * @param unsigned int id : l'index à enlever dans l'adresse
+ * @return char
+ */
+char book_remove(book_db *db, unsigned int id);
 
 /**
  * @fn book_initDatabase(char *name)

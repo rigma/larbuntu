@@ -28,6 +28,7 @@ typedef struct {
 	char *name;
 	unsigned int size;
 	unsigned int next;
+	unsigned int deleted;
 	thema_t *first;
 	thema_t **themas;
 } thema_db;
@@ -47,6 +48,16 @@ thema_t *thema_init();
  * @param thema_t *thema
  */
 void thema_free(thema_t *thema);
+
+/**
+ * @fn thema_add(thema_db *db, thema_t *thema)
+ * @brief Ajoute un thème dans la base de données des thèmes
+ * @author Romain FAILLA
+ * @brief thema_db *db : la base de données des thèmes
+ * @brief thema_t *thema : le thème à ajouter
+ * @return char
+ */
+char thema_add(thema_db *db, thema_t *thema);
 
 /**
  * @fn thema_initDatabase(book_db *db_books, char *name)

@@ -26,6 +26,64 @@ void thema_free(thema_t *thema)
 	free(thema);
 }
 
+char thema_add(thema_db *db, thema_t *thema)
+{
+	thema_t *previous = db->themas[db->next - 1], *next = db->themas[db->next + 1];
+	thema_t **tmp = NULL;
+	unsigned int i = 0;
+
+	if (db == NULL || thema == NULL)
+		return 0;
+
+	if (previous != NULL)
+	{
+		previous->next = thema;
+		thema->previous = previous;
+	}
+
+	if (next != NULL)
+	{
+		next->previous = thema;
+		thema->next = next;
+	}
+
+	thema->id = db->next;
+
+	if (db->deleted == 0)
+	{
+		tmp = db->themas;
+
+		db->themas = (thema_t**) realloc(db->themas, db->size++ * sizeof(thema_t*));
+
+		if (db->themas == NULL)
+		{
+			db->themas = tmp;
+
+			return 0;
+		}
+
+		db->themas[db->next] = thema;
+		db->next = db->size;
+	}
+	else
+	{
+		db->themas[db->next] = thema;
+		db->deleted--;
+
+		for (i = 0; i < db->size; i++)
+		{
+			if (db->themas[i] == NULL)
+			{
+				db->next = i;
+
+				break;
+			}
+		}
+	}
+
+	return 1;
+}
+
 thema_db *thema_initDatabase(book_db *db_books, char *name)
 {
 	// Variables de travail
@@ -71,6 +129,7 @@ thema_db *thema_initDatabase(book_db *db_books, char *name)
 		strcpy(db->name, name);
 		db->size = 0;
 		db->next = 0;
+		db->deleted = 0;
 		db->first = NULL;
 		db->themas = NULL;
 	}
@@ -106,6 +165,7 @@ thema_db *thema_initDatabase(book_db *db_books, char *name)
 		strcpy(db->name, name);
 		fread(&db->size, sizeof(unsigned int), 1, f);
 		fread(&db->next, sizeof(unsigned int), 1, f);
+		fread(&db->deleted, sizeof(unsigned int), 1, f);
 
 		// Créations du tableau contenant les adresses des éléments de la base de donnée
 		db->themas = (thema_t**) malloc(db->size * sizeof(thema_t*));
@@ -223,6 +283,7 @@ char thema_saveDatabase(thema_db *db)
 	// Ecriture des éléments d'entête de la base de données
 	fwrite(&db->size, sizeof(unsigned int), 1, f);
 	fwrite(&db->next, sizeof(unsigned int), 1, f);
+	fwrite(&db->deleted, sizeof(unsigned int), 1, f);
 
 	// Ecriture des éléments de la base de données
 	for (i = 0; i < db->size; i++)
@@ -304,6 +365,7 @@ char thema_freeDatabase(thema_db *db)
 	// Ecriture des éléments d'entête de la base de données
 	fwrite(&db->size, sizeof(unsigned int), 1, f);
 	fwrite(&db->next, sizeof(unsigned int), 1, f);
+	fwrite(&db->deleted, sizeof(unsigned int), 1, f);
 
 	// Ecriture des éléments de la base de données
 	for (i = 0 ; i < db->size ; i++)

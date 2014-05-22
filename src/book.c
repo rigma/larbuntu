@@ -31,6 +31,64 @@ void book_free(book_t *book)
 	free(book);
 }
 
+char book_add(book_db *db, book_t *book)
+{
+	book_t *previous = db->books[db->next - 1], *next = db->books[db->next + 1];
+	book_t **tmp = NULL;
+	unsigned int i = 0;
+
+	if (db == NULL || book == NULL)
+		return 0;
+
+	if (previous != NULL)
+	{
+		previous->next = book;
+		book->previous = previous;
+	}
+
+	if (next != NULL)
+	{
+		next->previous = book;
+		book->next = next;
+	}
+
+	book->id = db->next;
+
+	if (db->deleted == 0)
+	{
+		tmp = db->books;
+
+		db->books = (book_t**) realloc(db->books, db->size++ * sizeof(book_t*));
+
+		if (db->books == NULL)
+		{
+			db->books = tmp;
+
+			return 0;
+		}
+
+		db->books[db->next] = book;
+		db->next = db->size;
+	}
+	else
+	{
+		db->books[db->next] = book;
+		db->deleted--;
+
+		for (i = 0 ; i < db->size ; i++)
+		{
+			if (db->books[i] == NULL)
+			{
+				db->next = i;
+
+				break;
+			}
+		}
+	}
+
+	return 1;
+}
+
 book_db *book_initDatabase(char *name)
 {
 	// Variables de travail
@@ -74,6 +132,7 @@ book_db *book_initDatabase(char *name)
 
 		db->size = 0;
 		db->next = 0;
+		db->deleted = 0;
 		db->first = NULL;
 		db->books = NULL;
 	}
@@ -111,6 +170,7 @@ book_db *book_initDatabase(char *name)
 		strcpy(db->name, name);
 		fread(&db->size, sizeof(unsigned int), 1, f);
 		fread(&db->next, sizeof(unsigned int), 1, f);
+		fread(&db->deleted, sizeof(unsigned int), 1, f);
 
 		// Création du tableau contenant les pointeurs directs sur les livres
 		db->books = (book_t**) malloc(db->size * sizeof(book_t*));
@@ -258,9 +318,10 @@ char book_saveDatabase(book_db *db)
 	// Ecriture des informations sur la taille de base de données
 	fwrite(&db->size, sizeof(unsigned int), 1, f);
 	fwrite(&db->next, sizeof(unsigned int), 1, f);
+	fwrite(&db->deleted, sizeof(unsigned int), 1, f);
 
 	// Ecriture des entrées de la base de données
-	for (i = 0; i < db->size; i++)
+	for (i = 0 ; i < db->size ; i++)
 	{
 		book = db->books[i];
 
@@ -344,6 +405,7 @@ char book_freeDatabase(book_db *db)
 	// Ecriture des informations sur la taille de la base de données
 	fwrite(&db->size, sizeof(unsigned int), 1, f);
 	fwrite(&db->next, sizeof(unsigned int), 1, f);
+	fwrite(&db->deleted, sizeof(unsigned int), 1, f);
 
 	// Ecriture des entrées de la base de données
 	for (i = 0 ; i < db->size ; i++)
