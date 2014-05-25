@@ -33,12 +33,15 @@ void book_free(book_t *book)
 
 char book_add(book_db *db, book_t *book)
 {
-	book_t *previous = db->books[db->next - 1], *next = db->books[db->next + 1];
+	book_t *previous = NULL, *next = NULL;
 	book_t **tmp = NULL;
 	unsigned int i = 0;
 
 	if (db == NULL || book == NULL)
 		return 0;
+
+	previous = (db->next == 0) ? NULL : db->books[db->next - 1];
+	next = (db->next >= db->size) ? NULL : db->books[db->next + 1];
 
 	if (previous != NULL)
 	{
@@ -56,16 +59,13 @@ char book_add(book_db *db, book_t *book)
 
 	if (db->deleted == 0)
 	{
-		tmp = db->books;
+		db->size++;
+		tmp = (book_t**) realloc(db->books, db->size * sizeof(book_t*));
 
-		db->books = (book_t**) realloc(db->books, db->size++ * sizeof(book_t*));
-
-		if (db->books == NULL)
-		{
+		if (tmp != NULL)
 			db->books = tmp;
-
+		else
 			return 0;
-		}
 
 		db->books[db->next] = book;
 		db->next = db->size;
@@ -84,6 +84,9 @@ char book_add(book_db *db, book_t *book)
 				break;
 			}
 		}
+
+		if (i == db->size)
+			db->next = db->size;
 	}
 
 	return 1;
@@ -129,6 +132,7 @@ book_db *book_initDatabase(char *name)
 	
 	// Tampons de lecture
 	char *buffer_str = NULL;
+	unsigned short buffer_short = 0;
 	unsigned char buffer_char = 0;
 
 	if (db == NULL || filename == NULL)
@@ -194,9 +198,12 @@ book_db *book_initDatabase(char *name)
 		}
 		
 		free(buffer_str);
+		buffer_str = NULL;
 
 		// Lecture des entrées
+		db->name = (char*) malloc((strlen(name) + 1) * sizeof(char));
 		strcpy(db->name, name);
+
 		fread(&db->size, sizeof(unsigned int), 1, f);
 		fread(&db->next, sizeof(unsigned int), 1, f);
 		fread(&db->deleted, sizeof(unsigned int), 1, f);
@@ -231,9 +238,9 @@ book_db *book_initDatabase(char *name)
 				fread(&book->id, sizeof(unsigned int), 1, f);
 
 				// Lecture du titre
-				fread(&buffer_char, sizeof(char), 1, f);
+				fread(&buffer_short, sizeof(unsigned short), 1, f);
 
-				book->title = (char*)malloc(buffer_char * sizeof(char));
+				book->title = (char*) malloc(buffer_short * sizeof(char));
 				if (book->title == NULL)
 				{
 					book_free(book);
@@ -245,12 +252,12 @@ book_db *book_initDatabase(char *name)
 					return NULL;
 				}
 
-				fread(book->title, sizeof(char), buffer_char, f);
+				fread(book->title, sizeof(char), buffer_short, f);
 
 				// Lecture du nom de l'auteur
-				fread(&buffer_char, sizeof(char), 1, f);
+				fread(&buffer_short, sizeof(unsigned short), 1, f);
 
-				book->author = (char*)malloc(buffer_char * sizeof(char));
+				book->author = (char*) malloc(buffer_short * sizeof(char));
 				if (book->author == NULL)
 				{
 					book_free(book);
@@ -262,8 +269,10 @@ book_db *book_initDatabase(char *name)
 					return NULL;
 				}
 
+				fread(book->author, sizeof(char), buffer_short, f);
+
 				// Lecture de l'entrée dans le thème du livre
-				fread(&book->entry, sizeof(short), 1, f);
+				fread(&book->entry, sizeof(unsigned short), 1, f);
 
 				// Lecture du nombre d'exemplaires du livre possédés
 				fread(&book->effective, sizeof(unsigned int), 1, f);
@@ -298,8 +307,11 @@ book_db *book_initDatabase(char *name)
 		}
 	}
 
+	free(buffer_str);
 	free(filename);
-	fclose(f);
+
+	if (f != NULL)
+		fclose(f);
 
 	return db;
 }
@@ -314,7 +326,8 @@ char book_saveDatabase(book_db *db)
 
 	// Tampons d'écriture
 	char *buffer_str = NULL;
-	char buffer_char = 0;
+	unsigned short buffer_short = 0;
+	unsigned char buffer_char = 0;
 
 	if (db == NULL || filename == NULL)
 		return 0;
@@ -344,10 +357,12 @@ char book_saveDatabase(book_db *db)
 
 	strcpy(buffer_str, LARBUNTU);
 	fwrite(buffer_str, sizeof(char), 9, f);
+
 	free(buffer_str);
+	buffer_str = NULL;
 
 	buffer_char = BOOK;
-	fwrite(&buffer_char, sizeof(char), 1, f);
+	fwrite(&buffer_char, sizeof(unsigned char), 1, f);
 
 	// Ecriture des informations sur la taille de base de données
 	fwrite(&db->size, sizeof(unsigned int), 1, f);
@@ -375,14 +390,14 @@ char book_saveDatabase(book_db *db)
 			fwrite(&book->id, sizeof(unsigned int), 1, f);
 
 			// Ecriture du titre du livre
-			buffer_char = strlen(book->title) + 1;
-			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
-			fwrite(book->title, sizeof(char), buffer_char + 1, f);
+			buffer_short = strlen(book->title) + 1;
+			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
+			fwrite(book->title, sizeof(char), buffer_char, f);
 
 			// Ecriture de l'auteur du livre
-			buffer_char = strlen(book->author) + 1;
-			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
-			fwrite(book->author, sizeof(char), buffer_char + 1, f);
+			buffer_short = strlen(book->author) + 1;
+			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
+			fwrite(book->author, sizeof(char), buffer_char, f);
 
 			// Ecriture de l'entrée du livre dans le thème
 			fwrite(&book->entry, sizeof(unsigned short), 1, f);
@@ -397,6 +412,8 @@ char book_saveDatabase(book_db *db)
 			fwrite(book->d_borrows, sizeof(unsigned int), book->effective, f);
 		}
 	}
+
+	free(buffer_str);
 
 	free(filename);
 	fclose(f);
@@ -414,7 +431,8 @@ char book_freeDatabase(book_db *db)
 
 	// Tampons d'écriture
 	char *buffer_str = NULL;
-	char buffer_char = 0;
+	unsigned char buffer_char = 0;
+	unsigned short buffer_short = 0;
 
 	if (db == NULL || filename == NULL)
 		return 0;
@@ -444,10 +462,12 @@ char book_freeDatabase(book_db *db)
 
 	strcpy(buffer_str, LARBUNTU);
 	fwrite(buffer_str, sizeof(char), 9, f);
+
 	free(buffer_str);
+	buffer_str = NULL;
 
 	buffer_char = BOOK;
-	fwrite(&buffer_char, sizeof(char), 1, f);
+	fwrite(&buffer_char, sizeof(unsigned char), 1, f);
 
 	// Ecriture des informations sur la taille de la base de données
 	fwrite(&db->size, sizeof(unsigned int), 1, f);
@@ -475,14 +495,14 @@ char book_freeDatabase(book_db *db)
 			fwrite(&book->id, sizeof(unsigned int), 1, f);
 
 			// Ecriture du titre du livre
-			buffer_char = strlen(book->title) + 1;
-			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
-			fwrite(book->title, sizeof(char), buffer_char + 1, f);
+			buffer_short = strlen(book->title) + 1;
+			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
+			fwrite(book->title, sizeof(char), buffer_short, f);
 
 			// Ecriture de l'auteur du livre
-			buffer_char = strlen(book->author) + 1;
-			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
-			fwrite(book->author, sizeof(char), buffer_char + 1, f);
+			buffer_short = strlen(book->author) + 1;
+			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
+			fwrite(book->author, sizeof(char), buffer_short, f);
 
 			// Ecriture de l'entrée du livre dans le thème
 			fwrite(&book->entry, sizeof(unsigned short), 1, f);
@@ -497,12 +517,15 @@ char book_freeDatabase(book_db *db)
 			fwrite(book->d_borrows, sizeof(unsigned int), book->effective, f);
 
 			// Libération de l'élément de la mémoire
-			book->next->previous = NULL;
+			if (book->next != NULL)
+				book->next->previous = NULL;
 
 			book_free(book);
 			db->books[i] = NULL;
 		}
 	}
+
+	free(buffer_str);
 
 	free(filename);
 	fclose(f);
