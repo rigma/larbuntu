@@ -22,8 +22,11 @@ thema_t *thema_init()
 
 void thema_free(thema_t *thema)
 {
-	free(thema->books);
-	free(thema);
+	if (thema == NULL)
+	{
+		free(thema->books);
+		free(thema);
+	}
 }
 
 char thema_add(thema_db *db, thema_t *thema)
@@ -179,6 +182,8 @@ thema_db *thema_initDatabase(book_db *db_books, char *name)
 
 		if (strcmp(buffer_str, LARBUNTU) || buffer_char != THEMA)
 		{
+			printf("Base de données non valide.\n");
+
 			free(buffer_str);
 			free(db);
 
@@ -193,6 +198,15 @@ thema_db *thema_initDatabase(book_db *db_books, char *name)
 
 		// On crée les entêtes des fonctions
 		db->name = (char*) malloc((strlen(name) + 1) * sizeof(char));
+		if (db->name == NULL)
+		{
+			free(db);
+			free(filename);
+			fclose(f);
+
+			return NULL;
+		}
+
 		strcpy(db->name, name);
 
 		fread(&db->size, sizeof(unsigned int), 1, f);

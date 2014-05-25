@@ -25,10 +25,13 @@ book_t *book_init()
 
 void book_free(book_t *book)
 {
-	free(book->title);
-	free(book->author);
-	free(book->d_borrows);
-	free(book);
+	if (book == NULL)
+	{
+		free(book->title);
+		free(book->author);
+		free(book->d_borrows);
+		free(book);
+	}
 }
 
 char book_add(book_db *db, book_t *book)
@@ -161,6 +164,7 @@ book_db *book_initDatabase(char *name)
 
 			return NULL;
 		}
+
 		strcpy(db->name, name);
 
 		db->size = 0;
@@ -188,6 +192,8 @@ book_db *book_initDatabase(char *name)
 
 		if (strcmp(buffer_str, LARBUNTU) || buffer_char != BOOK)
 		{
+			printf("Base de données non valide.\n");
+
 			free(buffer_str);
 			free(db);
 
@@ -202,6 +208,15 @@ book_db *book_initDatabase(char *name)
 
 		// Lecture des entrées
 		db->name = (char*) malloc((strlen(name) + 1) * sizeof(char));
+		if (db->name == NULL)
+		{
+			free(db);
+			free(filename);
+			fclose(f);
+
+			return NULL;
+		}
+
 		strcpy(db->name, name);
 
 		fread(&db->size, sizeof(unsigned int), 1, f);

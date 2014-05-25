@@ -4,6 +4,7 @@
 #include "contact.h"
 
 #define MAX_BORROWS_MEMBER 3
+#define BORROWS_CODE 10
 
 /**
  * @struct member_t
@@ -11,6 +12,7 @@
  * @author Romain FAILLA et Olivier NISOLE
  */
 typedef struct member_t {
+	unsigned int id;           // L'identifiant dans la base de données
 	char *name;                // Le nom de l'adhérent
 	char *forname;             // Le prénom de l'adhérent
 	adress_t *adress;          // L'adresse postale
@@ -31,6 +33,7 @@ typedef struct {
 	char *name;
 	unsigned int size;
 	unsigned int next;
+	unsigned int deleted;
 	member_t *first;
 	member_t **members;
 } member_db;
@@ -59,6 +62,33 @@ void member_free(member_t *member);
 * @return member_t*
 */
 member_t* member_register(member_t *member);
+
+/**
+ * @fn member_initDatabase(char *name)
+ * @brief Initialise la base de données des membres
+ * @author Romain FAILLA
+ * @param char *name : le nom de la base de données
+ * @return member_db*
+ */
+member_db *member_initDatabase(char *name);
+
+/**
+ * @fn member_saveDatabase(member_db *db)
+ * @brief Sauvegarde la base de données des membres
+ * @author Romain FAILLA
+ * @param member_db *db : la base de données des membres à sauvegarder
+ * @return char
+ */
+char member_saveDatabase(member_db *db);
+
+/**
+ * @fn member_freeDatabase(member_db *db)
+ * @brief Libère la base de données des membres de la mémoire
+ * @author Romain FAILLA
+ * @param member_db *db : la base de données des membres à libérer
+ * @return char
+ */
+char member_freeDatabase(member_db *db);
 
 #endif
 
