@@ -3,8 +3,7 @@
 
 int main(void)
 {
-	char menu = 0;
-	char run = 1;
+	static char menu = 0, run = 1;
 
 	do
 	{
@@ -12,7 +11,7 @@ int main(void)
 		{
 			system("cls");
 			fflush(stdin);
-			printf("Bienvenu sur le menu principal de la bibliotheque. Veuillez entrer le numero de l'action que vous voulez effectuer :\n\n0) Menu de Services \n1) Menu d'interface\n2) Quitter le programme\n\nVeuillez saisir votre choix : ");
+			printf("Bienvenue sur le menu principal de la bibliotheque. Veuillez entrer le numero de l'action que vous voulez effectuer :\n\n0) Menu de Services \n1) Menu d'interface\n2) Quitter le programme\n\nVeuillez saisir votre choix : ");
 		} while (!scanf("%d", &menu) || (menu > 2) || (menu < 0));
 
 		if (!menu)
