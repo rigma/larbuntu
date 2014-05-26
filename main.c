@@ -3,12 +3,17 @@
 #include <time.h>
 
 #include <utils.h>
+#include <db.h>
 
 int main(void)
 {
 	static char menu = 0, run = 1;
 	time_t t;
 	struct tm *info;
+	db_t* base = db_init("member", "thema", "book");
+	
+	if (base == NULL)
+		exit(EXIT_FAILURE);
 
 	do
 	{
@@ -106,6 +111,8 @@ int main(void)
 			run = 0;
 		}
 	} while (run);
+
+	db_free(base);
 
 	return EXIT_SUCCESS;
 }
