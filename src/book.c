@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <book.h>
+#include <thema.h>
 #include <dbio.h>
 
 book_t *book_init()
@@ -17,6 +17,7 @@ book_t *book_init()
 	book->effective = 0;
 	book->free = 0;
 	book->d_borrows = NULL;
+	book->thema = NULL;
 	book->previous = NULL;
 	book->next = NULL;
 
@@ -108,6 +109,9 @@ char book_remove(book_db *db, unsigned int index)
 		return 0;
 	else
 	{
+		if (!thema_removeBook((thema_t*) book->thema, book))
+			return 0;
+
 		previous = book->previous;
 		next = book->next;
 

@@ -186,7 +186,47 @@ char thema_insertBook(thema_t *thema, book_t *book)
 	thema->books = tmp;
 
 	book->entry = thema->size - 1;
+	book->thema = (void*) thema;
+
 	thema->books[thema->size - 1] = book;
+
+	return 1;
+}
+
+char thema_removeBook(thema_t *thema, book_t *book)
+{
+	book_t **tmp = NULL;
+	unsigned short size = 0;
+	unsigned short i = 0, j = 0;
+
+	if (thema == NULL || book == NULL)
+		return 0;
+
+	if (thema->size == 0)
+		return 0;
+
+	size = thema->size - 1;
+	tmp = (book_t**) malloc(size * sizeof(book_t*));
+	
+	if (tmp == NULL)
+		return 0;
+
+	thema->books[book->entry] = NULL;
+	while (i < size)
+	{
+		if (thema->books[j] != NULL)
+		{
+			tmp[i] = thema->books[j];
+
+			i++;
+			j++;
+		}
+		else
+			j++;
+	}
+
+	free(thema->books);
+	thema->books = tmp;
 
 	return 1;
 }

@@ -14,6 +14,7 @@ typedef struct book_t {
 	unsigned int effective;  // Le nombre d'exemplaires possédés
 	unsigned int free;       // Le nombre d'exemplaires libres
 	unsigned int *d_borrows; // Les durées d'emprunt
+	void *thema;             // Le thème du livre
 	struct book_t *previous; // L'élément précédent
 	struct book_t *next;     // L'élément suivant
 } book_t;
