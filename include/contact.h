@@ -9,10 +9,11 @@
 typedef enum {
 	TRAIL = 0,
 	ROAD = 1,
-	STREET = 2,
-	AVENUE = 3,
-	BOULEVARD = 4,
-	PLACE = 5
+	DEADEND = 2,
+	STREET = 3,
+	AVENUE = 4,
+	BOULEVARD = 5,
+	PLACE = 6
 } path_t;
 
 /**

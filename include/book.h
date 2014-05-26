@@ -95,4 +95,13 @@ char book_saveDatabase(book_db *db);
  */
 char book_freeDatabase(book_db *db);
 
+/**
+ * @fn book_register()
+ * @brief Saisie d'un livre
+ * @author Olivier NISOLE
+ * @param  book_t* book
+ * @return book_t*
+ */
+book_t* book_register(book_t* book);
+
 #endif

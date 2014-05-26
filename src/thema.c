@@ -143,7 +143,7 @@ thema_db *thema_initDatabase(book_db *db_books, char *name)
 
 	strcpy(filename, "db/");
 	strcat(filename, name);
-	strcat(filename, ".db");
+	strcat(filename, ".ldb");
 
 	f = fopen(filename, "rb");
 	if (f == NULL)
@@ -306,7 +306,7 @@ char thema_saveDatabase(thema_db *db)
 	// Ouverture du fichier
 	strcpy(filename, "db/");
 	strcat(filename, db->name);
-	strcat(filename, ".db");
+	strcat(filename, ".ldb");
 
 	f = fopen(filename, "wb");
 	if (f == NULL)
@@ -406,7 +406,7 @@ char thema_freeDatabase(thema_db *db)
 	// Ouverture du fichier
 	strcpy(filename, "db/");
 	strcat(filename, db->name);
-	strcat(filename, ".db");
+	strcat(filename, ".ldb");
 
 	f = fopen(filename, "wb");
 	if (f == NULL)

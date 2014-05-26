@@ -133,7 +133,7 @@ adress_t* adress_register(adress_t *adress)
 	if (adress == NULL)
 	{
 		printf("Veuillez entrer le numero de la rue : ");
-		scanf("%d", number);
+		scanf("%d", &number);
 
 		printf("Veuillez entrer le numero correspondant au type de rue\n(0 = Chemin ; 1 = Route ; 2 = Rue ; 3 = Avenue ; 4 = Boulevard ; 5 = Place)\n");
 		scanf("%d", &type);
@@ -143,11 +143,14 @@ adress_t* adress_register(adress_t *adress)
 		fflush(stdin);
 
 		printf("Veuillez entrer le code postal : ");
-		scanf("%d", postal);
+		scanf("%d", &postal);
 
 		printf("Veuillez entrer la ville : ");
 		fgets(city, sizeof(city), stdin);
 		fflush(stdin);
+
+		pathname[strlen(pathname) - 1] = '\0';
+		city[strlen(city) - 1] = '\0';
 
 		a = adress_init(number, type, pathname, postal, city);
 	}
@@ -156,28 +159,30 @@ adress_t* adress_register(adress_t *adress)
 		a = adress;
 
 		printf("Veuillez entrer le numero de la rue : ");
-		scanf("%d", number);
+		scanf("%d", &number);
 		a->number = number;
 
-		printf("Veuillez entrer le numero correspondant au type de rue\n(0 = Chemin ; 1 = Route ; 2 = Rue ; 3 = Avenue ; 4 = Boulevard ; 5 = Place)\n");
-		scanf("%d", type);
+		printf("Veuillez entrer le numero correspondant au type de rue\n(0 = Chemin ; 1 = Route ; 2 = Impasse ; 3 = Rue ; 4 = Avenue ; 5 = Boulevard ; 6 = Place)\n");
+		scanf("%d", &type);
 		a->path = type;
 
 		printf("Veuillez entrer le nom du chemin : ");
 		fgets(pathname, sizeof(pathname), stdin);
 		fflush(stdin);
 
+		pathname[strlen(pathname) - 1] = '\0';
 		a->pathname = (char*) malloc((1 + strlen(pathname)) * sizeof(char));
 		strcpy(a->pathname, pathname);
 		
 		printf("Veuillez entrer le code postal : ");
-		scanf("%d", postal);
+		scanf("%d", &postal);
 		a->postal = postal;
 
 		printf("Veuillez entrer la ville : ");
 		fgets(city, sizeof(city), stdin);
 		fflush(stdin);
 
+		city[strlen(city) - 1] = '\0';
 		a->city = (char*) malloc((1 + strlen(city)) * sizeof(char));
 		strcpy(a->city, city);
 	}

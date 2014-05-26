@@ -50,6 +50,7 @@ member_t* member_register(member_t* member)
 	fgets(tempo, sizeof(tempo), stdin);
 	fflush(stdin);
 
+	tempo[strlen(tempo) - 1] = '\0';
 	m->name = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
 	strcpy(m->name, tempo);
 
@@ -57,6 +58,7 @@ member_t* member_register(member_t* member)
 	fgets(tempo, sizeof(tempo), stdin);
 	fflush(stdin);
 
+	tempo[strlen(tempo) - 1] = '\0';
 	m->forname = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
 	strcpy(m->forname, tempo);
 
@@ -66,7 +68,8 @@ member_t* member_register(member_t* member)
 	printf("Veuillez entrer la profession de l adherent : ");
 	fgets(tempo, sizeof(tempo), stdin);
 	fflush(stdin);
-
+	
+	tempo[strlen(tempo) - 1] = '\0';
 	m->profession = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
 	strcpy(m->profession, tempo);
 
@@ -100,7 +103,7 @@ member_db *member_initDatabase(char *name)
 
 	strcpy(filename, "db/");
 	strcat(filename, name);
-	strcat(filename, ".db");
+	strcat(filename, ".ldb");
 
 	f = fopen(filename, "rb");
 	if (f == NULL)
@@ -359,7 +362,7 @@ member_db *member_initDatabase(char *name)
 				{
 					member->borrows[j] = (char*) malloc(BORROWS_CODE * sizeof(char));
 					
-					fread(member->borrows[i], sizeof(char), BORROWS_CODE, 1);
+					fread(member->borrows[i], sizeof(char), BORROWS_CODE, f);
 				}
 
 				// Création des liens de la chaîne
@@ -405,7 +408,7 @@ char member_saveDatabase(member_db *db)
 	// Ouverture du fichier
 	strcpy(filename, "db/");
 	strcat(filename, db->name);
-	strcat(filename, ".db");
+	strcat(filename, ".ldb");
 
 	f = fopen(filename, "wb");
 	if (f == NULL)
@@ -474,7 +477,7 @@ char member_saveDatabase(member_db *db)
 
 			buffer_short = strlen(member->adress->pathname) + 1;
 			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
-			fwrite(member->adress->pathname, sizeof(char), buffer_short, 1);
+			fwrite(member->adress->pathname, sizeof(char), buffer_short, f);
 
 			fwrite(&member->adress->postal, sizeof(unsigned int), 1, f);
 
@@ -525,7 +528,7 @@ char member_freeDatabase(member_db *db)
 	// Ouverture du fichier
 	strcpy(filename, "db/");
 	strcat(filename, db->name);
-	strcat(filename, ".db");
+	strcat(filename, ".ldb");
 
 	f = fopen(filename, "wb");
 	if (f == NULL)
@@ -594,7 +597,7 @@ char member_freeDatabase(member_db *db)
 
 			buffer_short = strlen(member->adress->pathname) + 1;
 			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
-			fwrite(member->adress->pathname, sizeof(char), buffer_short, 1);
+			fwrite(member->adress->pathname, sizeof(char), buffer_short, f);
 
 			fwrite(&member->adress->postal, sizeof(unsigned int), 1, f);
 

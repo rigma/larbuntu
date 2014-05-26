@@ -150,7 +150,7 @@ book_db *book_initDatabase(char *name)
 
 	strcpy(filename, "db/");
 	strcat(filename, name);
-	strcat(filename, ".db");
+	strcat(filename, ".ldb");
 
 	f = fopen(filename, "rb");
 	if (f == NULL)
@@ -350,7 +350,7 @@ char book_saveDatabase(book_db *db)
 	// Ouverture du fichier
 	strcpy(filename, "db/");
 	strcat(filename, db->name);
-	strcat(filename, ".db");
+	strcat(filename, ".ldb");
 
 	f = fopen(filename, "wb");
 	if (f == NULL)
@@ -455,7 +455,7 @@ char book_freeDatabase(book_db *db)
 	// Ouverture du fichier
 	strcpy(filename, "db/");
 	strcat(filename, db->name);
-	strcat(filename, ".db");
+	strcat(filename, ".ldb");
 
 	f = fopen(filename, "wb");
 	if (f == NULL)
@@ -551,3 +551,42 @@ char book_freeDatabase(book_db *db)
 
 	return 1;
 }
+
+book_t* book_register(book_t* book)
+{
+	book_t *b = NULL;
+	char tempo[200];
+
+
+	if (book == NULL)
+		b = book_init();
+	else
+		b = book;
+
+	printf("Veuillez entrer le titre du livre : ");
+	fgets(tempo, sizeof(tempo), stdin);
+	fflush(stdin);
+
+	tempo[strlen(tempo) - 1] = '\0';
+	b->title = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
+	strcpy(b->title, tempo);
+
+	printf("Veuillez entrer l'auteur du livre : ");
+	fgets(tempo, sizeof(tempo), stdin);
+	fflush(stdin);
+
+	tempo[strlen(tempo) - 1] = '\0';
+	b->author = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
+	strcpy(b->author, tempo);
+
+	// theme ta race
+
+	printf("Veuillez entrer le nombre d'exemplaire de ce livre : ");
+	scanf("%d", &b->effective);
+	b->free = b->effective;
+
+	// d_borrows ?
+
+	return b;
+}
+
