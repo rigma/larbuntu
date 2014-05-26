@@ -134,7 +134,7 @@ book_db *book_initDatabase(char *name)
 	FILE *f = NULL;
 	book_db *db = (book_db*) malloc(sizeof(book_db));
 	book_t *book = NULL, *previous =  NULL;
-	char *filename = (char*) malloc((strlen(name) + 7) * sizeof(char));
+	char *filename = (char*) malloc((strlen(name) + 8) * sizeof(char));
 	unsigned int i = 0;
 	
 	// Tampons de lecture
@@ -340,7 +340,7 @@ char book_saveDatabase(book_db *db)
 	// Variables de travail
 	FILE *f = NULL;
 	book_t *book = NULL;
-	char *filename = (char*) malloc((7 + strlen(db->name)) * sizeof(char));
+	char *filename = (char*) malloc((8 + strlen(db->name)) * sizeof(char));
 	unsigned int i = 0;
 
 	// Tampons d'écriture
@@ -445,7 +445,7 @@ char book_freeDatabase(book_db *db)
 	// Variables de travail
 	FILE *f = NULL;
 	book_t *book = NULL;
-	char *filename = (char*) malloc((7 + strlen(db->name)) * sizeof(char));
+	char *filename = (char*) malloc((8 + strlen(db->name)) * sizeof(char));
 	unsigned int i = 0;
 
 	// Tampons d'écriture

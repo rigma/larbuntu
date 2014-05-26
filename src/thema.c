@@ -237,7 +237,7 @@ thema_db *thema_initDatabase(book_db *db_books, char *name)
 	FILE *f = NULL;
 	thema_db *db = (thema_db*) malloc(sizeof(thema_db));
 	thema_t *thema = NULL, *previous = NULL;
-	char *filename = (char*) malloc((strlen(name) + 7) * sizeof(char));
+	char *filename = (char*) malloc((strlen(name) + 8) * sizeof(char));
 	unsigned int i = 0;
 	unsigned short j = 0;
 
@@ -395,7 +395,7 @@ thema_db *thema_initDatabase(book_db *db_books, char *name)
 	free(buffer_str);
 	free(filename);
 
-	if (f == NULL)
+	if (f != NULL)
 		fclose(f);
 
 	return db;
@@ -406,7 +406,7 @@ char thema_saveDatabase(thema_db *db)
 	// Variables de travail
 	FILE *f = NULL;
 	thema_t *thema = NULL;
-	char *filename = (char*)malloc((7 + strlen(db->name)) * sizeof(char));
+	char *filename = (char*)malloc((8 + strlen(db->name)) * sizeof(char));
 	unsigned int i = 0;
 	unsigned short j = 0;
 
@@ -506,7 +506,7 @@ char thema_freeDatabase(thema_db *db)
 	// Variables de travail
 	FILE *f = NULL;
 	thema_t *thema = NULL;
-	char *filename = (char*) malloc((7 + strlen(db->name)) * sizeof(char));
+	char *filename = (char*) malloc((8 + strlen(db->name)) * sizeof(char));
 	unsigned int i = 0;
 	unsigned short j = 0;
 

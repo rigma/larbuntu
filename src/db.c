@@ -29,7 +29,7 @@ db_t *db_init(char *member, char *thema, char *book)
 	if (db->db_thema == NULL)
 	{
 		member_freeDatabase(db->db_member);
-		book_freeDatabase(db->db_member);
+		book_freeDatabase(db->db_book);
 		free(db);
 
 		return NULL;

@@ -82,7 +82,7 @@ member_db *member_initDatabase(char *name)
 	FILE *f = NULL;
 	member_db *db = (member_db*) malloc(sizeof(member_db));
 	member_t *member = NULL, *previous = NULL;
-	char *filename = (char*) malloc((strlen(name) + 7) * sizeof(char));
+	char *filename = (char*) malloc((strlen(name) + 8) * sizeof(char));
 	unsigned int i = 0;
 	unsigned char j = 0;
 
@@ -116,6 +116,8 @@ member_db *member_initDatabase(char *name)
 
 			return NULL;
 		}
+		
+		strcpy(db->name, name);
 
 		db->size = 0;
 		db->next = 0;
@@ -126,7 +128,7 @@ member_db *member_initDatabase(char *name)
 	else
 	{
 		// On vérifie que la base de données est correcte
-		buffer_str = (char*)malloc(9 * sizeof(char));
+		buffer_str = (char*) malloc(9 * sizeof(char));
 		if (buffer_str == NULL)
 		{
 			free(db);
@@ -165,6 +167,8 @@ member_db *member_initDatabase(char *name)
 
 			return NULL;
 		}
+
+		strcpy(db->name, name);
 
 		fread(&db->size, sizeof(unsigned int), 1, f);
 		fread(&db->next, sizeof(unsigned int), 1, f);
@@ -394,7 +398,7 @@ char member_saveDatabase(member_db *db)
 	// Variables de travail
 	FILE *f = NULL;
 	member_t *member = NULL;
-	char *filename = (char*) malloc((7 + strlen(db->name)) * sizeof(char));
+	char *filename = (char*) malloc((8 + strlen(db->name)) * sizeof(char));
 	unsigned int i = 0;
 
 	// Tampons d'écriture
@@ -514,7 +518,7 @@ char member_freeDatabase(member_db *db)
 	// Variables de travail
 	FILE *f = NULL;
 	member_t *member = NULL;
-	char *filename = (char*)malloc((7 + strlen(db->name)) * sizeof(char));
+	char *filename = (char*) malloc((8 + strlen(db->name)) * sizeof(char));
 	unsigned int i = 0;
 
 	// Tampons d'écriture
