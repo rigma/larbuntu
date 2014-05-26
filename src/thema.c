@@ -116,6 +116,81 @@ char thema_remove(thema_db *db, unsigned int index)
 	return 1;
 }
 
+thema_t *thema_register(thema_t *thema)
+{
+	thema_t *t = NULL;
+	char tmp[200] = { 0 };
+	char answer = 0;
+
+	if (t == NULL)
+	{
+		t = thema_init();
+
+		// Saisi de la clé du thème
+		printf("Saississez la clé du thème (3 caracteres maximum) : ");
+		fgets(tmp, sizeof(tmp), stdin);
+
+		tmp[strlen(tmp) - 1] = '\0';
+		strcpy(t->key, tmp);
+	}
+	else
+	{
+		t = thema;
+
+		// Affichage des informations courantes sur le thème à modifier
+		printf("Thème %d :\n", t->id);
+		printf("-----------------------------------------\n");
+		printf(" - Clé : %s\n", t->key);
+		printf("-----------------------------------------\n\n\n");
+
+		do
+		{
+			fflush(stdin);
+			printf("Voulez-vous modifiez la clé ? [o/N] : ");
+		} while (!scanf("%c", &answer));
+
+		if (answer == 'o' || answer == 'O')
+		{
+			// Saisi de la clé du thème
+			printf("Saississez la clé du thème (3 caracteres maximum) : ");
+			fgets(tmp, sizeof(tmp), stdin);
+
+			tmp[strlen(tmp) - 1] = '\0';
+			strcpy(t->key, tmp);
+		}
+	}
+
+	return t;
+}
+
+char thema_insertBook(thema_t *thema, book_t *book)
+{
+	book_t **tmp = NULL;
+
+	if (thema == NULL || book == NULL)
+		return 0;
+
+	if (thema->size == MAX_BOOKS_THEMA)
+		return 0;
+
+	thema->size++;
+	tmp = (book_t**) realloc(thema->books, thema->size * sizeof(book_t*));
+
+	if (tmp == NULL)
+	{
+		thema->size--;
+
+		return 0;
+	}
+	
+	thema->books = tmp;
+
+	book->entry = thema->size - 1;
+	thema->books[thema->size - 1] = book;
+
+	return 1;
+}
+
 thema_db *thema_initDatabase(book_db *db_books, char *name)
 {
 	// Variables de travail

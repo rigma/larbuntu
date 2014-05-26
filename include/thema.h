@@ -70,6 +70,25 @@ char thema_add(thema_db *db, thema_t *thema);
 char thema_remove(thema_db *db, unsigned int index);
 
 /**
+ * @fn thema_register(thema_t *thema)
+ * @brief Effectue la saisie d'un thème
+ * @author Romain FAILLA
+ * @param thema_t *thema : le thème à modifier
+ * @return thema_t*
+ */
+thema_t *thema_register(thema_t *thema);
+
+/**
+ * @fn thema_insertBook(thema_t *thema, book_t *book)
+ * @brief Ajoute un livre dans un thème donné
+ * @author Romain FAILLA
+ * @param thema_t *thema : la thème recepteur
+ * @param book_t *book : le livre à ajouter
+ * @return char
+ */
+char thema_insertBook(thema_t *thema, book_t *book);
+
+/**
  * @fn thema_initDatabase(book_db *db_books, char *name)
  * @brief Initialise la base de données des thèmes
  * @author Romain FAILLA
