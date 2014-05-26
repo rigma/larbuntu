@@ -81,6 +81,7 @@
   <ItemGroup>
     <ClInclude Include="include\book.h" />
     <ClInclude Include="include\contact.h" />
+    <ClInclude Include="include\db.h" />
     <ClInclude Include="include\dbio.h" />
     <ClInclude Include="include\member.h" />
     <ClInclude Include="include\thema.h" />
@@ -90,6 +91,7 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="src\book.c" />
     <ClCompile Include="src\contact.c" />
+    <ClCompile Include="src\db.c" />
     <ClCompile Include="src\member.c" />
     <ClCompile Include="src\thema.c" />
     <ClCompile Include="src\utils.c" />
