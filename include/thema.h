@@ -126,4 +126,13 @@ char thema_saveDatabase(thema_db *db);
  */
 char thema_freeDatabase(thema_db *db);
 
+/**
+ * @fn thema_searchBookByCode(thema_db *db, char *code)
+ * @brief Recherche un livre en fonction de son code au sein d'un thème
+ * @author Romain FAILLA
+ * @param thema_db *db : la base de données
+ * @return book_t*
+ */
+book_t *thema_searchBookByCode(thema_db *db, char *code);
+
 #endif

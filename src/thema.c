@@ -52,6 +52,9 @@ char thema_add(thema_db *db, thema_t *thema)
 
 	thema->id = db->next;
 
+	if (db->size == 0)
+		db->first = thema;
+
 	if (db->deleted == 0)
 	{
 		db->size++;
@@ -111,6 +114,9 @@ char thema_remove(thema_db *db, unsigned int index)
 
 		db->next = index;
 		db->deleted++;
+
+		if (db->size - db->deleted == 0)
+			db->first = NULL;
 	}
 
 	return 1;
@@ -609,4 +615,34 @@ char thema_freeDatabase(thema_db *db)
 	free(db);
 
 	return 1;
+}
+
+book_t *thema_searchBookByCode(thema_db *db, char *code)
+{
+	thema_t *thema = db->first;
+	char key[4] = { code[0], code[1], code[2], '\0' }, entry[4] = { code[4], code[5], code[6], '\0' };
+	unsigned short i = 0;
+
+	do
+	{
+		if (!strcmp(key, thema->key))
+		{
+			if (atoi(entry) >= thema->size)
+				return NULL;
+			else
+			{
+				for (i = 0; i < thema->size; i++)
+				{
+					if (thema->books[i]->entry == atoi(entry))
+						return thema->books[i];
+				}
+
+				return NULL;
+			}
+		}
+
+		thema = thema->next;
+	} while (thema != NULL);
+
+	return NULL;
 }

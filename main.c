@@ -8,8 +8,10 @@
 int main(void)
 {
 	static char menu = 0, run = 1;
-	time_t t;
-	struct tm *info;
+	static char run2 = 1;
+
+	time_t t = 0;
+	struct tm *info = NULL;
 	db_t* base = db_init("member", "thema", "book");
 	
 	if (base == NULL)
@@ -17,12 +19,11 @@ int main(void)
 
 	do
 	{
-		static char run2 = 1;
 		do
 		{
 			system("cls");
 			fflush(stdin);
-			printf("Bienvenue sur le menu principal de la bibliotheque. Veuillez entrer le numero de l'action que vous voulez effectuer :\n\n0) Menu de Services \n1) Menu d'interface\n2) Quitter le programme\n\nVeuillez saisir votre choix : ");
+			printf("Bienvenue sur le menu principal de la bibliotheque. Veuillez entrer le numero de l'action que vous voulez effectuer :\n\n0) Menu des services\n1) Menu d'interface\n2) Quitter le programme\n\nVeuillez saisir votre choix : ");
 		} while (!scanf("%d", &menu) || (menu > 2) || (menu < 0));
 
 		if (!menu)
@@ -33,9 +34,15 @@ int main(void)
 				{
 					system("cls");
 					fflush(stdin);
-					printf("Vous etes dans le menu de services. Veuillez entrer le nombre correspondant a\nl'action souhaitee.\n\n0) Affichage des adherents\n1) Affichage des livres\n");
-					printf("2) Affichage des adherent ayant depasser la date d'emprunt\n3) Recherche dans les bases de donnees\n4) Retour au menu principal\n\nVeuillez saisir votre choix : ");
-				} while (!scanf("%d", &menu) || (menu > 4) || (menu < 0));
+					printf("Vous etes dans le menu de services. Veuillez entrer le nombre correspondant a\nl'action souhaitee.\n\n");
+					printf("0) Affichage des adherents\n");
+					printf("1) Affichage des livres\n");
+					printf("2) Affichage des themes\n");
+					printf("3) Affichage des adherent ayant depasser la date d'emprunt\n");
+					printf("4) Recherche dans les bases de donnees\n");
+					printf("5) Retour au menu principal\n\n");
+					printf("Veuillez saisir votre choix : ");
+				} while (!scanf("%d", &menu) || (menu > 5) || (menu < 0));
 
 				switch (menu)
 				{
@@ -44,7 +51,9 @@ int main(void)
 					break;
 
 				case 1:
-					printf("Affichage des livres en cours\n");
+					system("cls");
+
+					book_displayDatabase(base->db_book);
 					break;
 
 				case 2:
@@ -53,7 +62,7 @@ int main(void)
 				case 3:
 					printf("Recherche base de bonnee en cours\n");
 					break;
-				case 4:
+				case 5:
 					run2 = 0;
 					break;
 				}
@@ -75,11 +84,10 @@ int main(void)
 				switch (menu)
 				{
 				case 0:
-					system("cls");
 					time(&t);
 					info = localtime(&t);
 
-					printf("%s\n\n\n\n\n", datetime(info));
+					printf("%s\n", datetime(info));
 					system("pause");
 					break;
 

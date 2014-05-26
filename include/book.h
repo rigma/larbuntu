@@ -70,6 +70,15 @@ char book_add(book_db *db, book_t *book);
 char book_remove(book_db *db, unsigned int id);
 
 /**
+ * @fn book_register(book_t* book)
+ * @brief Saisie d'un livre
+ * @author Olivier NISOLE
+ * @param  book_t* book
+ * @return book_t*
+*/
+book_t* book_register(book_t* book);
+
+/**
  * @fn book_initDatabase(char *name)
  * @brief Initialise la base de données des livres
  * @author Romain FAILLA
@@ -97,12 +106,11 @@ char book_saveDatabase(book_db *db);
 char book_freeDatabase(book_db *db);
 
 /**
- * @fn book_register()
- * @brief Saisie d'un livre
- * @author Olivier NISOLE
- * @param  book_t* book
- * @return book_t*
+ * @fn book_displayDatabase(book_db *db)
+ * @brief Affiche les éléments de la base de données des livres
+ * @author Romain FAILLA
+ * @param book_db *db : la base de données des livres
  */
-book_t* book_register(book_t* book);
+void book_displayDatabase(book_db *db);
 
 #endif

@@ -55,6 +55,26 @@ member_t *member_init();
 void member_free(member_t *member);
 
 /**
+* @fn member_add(member_db *db, member_t *book)
+* @brief Ajoute un membre dans la base de données des mebres au prochain index libre
+* @author Romain FAILLA
+* @param member_db *db : la base de données des membres
+* @param member_t *membre : le livre à ajouter
+* @return char
+*/
+char member_add(member_db *db, member_t *book);
+
+/**
+* @fn member_remove(member_db *db, unsigned int id)
+* @brief Enlève le membre à l'index id de la base de données des livres
+* @author Romain FAILLA
+* @param member_db *db : la base de données des membres
+* @param unsigned int id : l'index à enlever dans la base de données
+* @return char
+*/
+char member_remove(member_db *db, unsigned int id);
+
+/**
 * @fn member_register()
 * @brief Saisie les données d'une variable de type member_t
 * @author Olivier NISOLE
@@ -91,4 +111,3 @@ char member_saveDatabase(member_db *db);
 char member_freeDatabase(member_db *db);
 
 #endif
-

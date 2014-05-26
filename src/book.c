@@ -61,6 +61,9 @@ char book_add(book_db *db, book_t *book)
 
 	book->id = db->next;
 
+	if (db->size == 0)
+		db->first = book;
+
 	if (db->deleted == 0)
 	{
 		db->size++;
@@ -123,9 +126,50 @@ char book_remove(book_db *db, unsigned int index)
 
 		db->next = index;
 		db->deleted++;
+
+		if (db->size - db->deleted == 0)
+			db->first = NULL;
 	}
 
 	return 1;
+}
+
+book_t* book_register(book_t* book)
+{
+	book_t *b = NULL;
+	char tempo[200];
+
+
+	if (book == NULL)
+		b = book_init();
+	else
+		b = book;
+
+	printf("Veuillez entrer le titre du livre : ");
+	fgets(tempo, sizeof(tempo), stdin);
+	fflush(stdin);
+
+	tempo[strlen(tempo) - 1] = '\0';
+	b->title = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
+	strcpy(b->title, tempo);
+
+	printf("Veuillez entrer l'auteur du livre : ");
+	fgets(tempo, sizeof(tempo), stdin);
+	fflush(stdin);
+
+	tempo[strlen(tempo) - 1] = '\0';
+	b->author = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
+	strcpy(b->author, tempo);
+
+	// theme ta race
+
+	printf("Veuillez entrer le nombre d'exemplaire de ce livre : ");
+	scanf("%d", &b->effective);
+	b->free = b->effective;
+
+	// d_borrows ?
+
+	return b;
 }
 
 book_db *book_initDatabase(char *name)
@@ -556,41 +600,34 @@ char book_freeDatabase(book_db *db)
 	return 1;
 }
 
-book_t* book_register(book_t* book)
+void book_displayDatabase(book_db *db)
 {
-	book_t *b = NULL;
-	char tempo[200];
-
+	thema_t *thema = NULL;
+	book_t *book = db->first;
+	char code[8];
 
 	if (book == NULL)
-		b = book_init();
+		printf("Il n'y a aucun livre enregistres dans la base de donnees.\n\n\n");
 	else
-		b = book;
+	{
+		do
+		{
+			sprintf(code, "%s-%.3d", /*((thema_t*) book->thema)->key*/ "TRC", book->entry);
 
-	printf("Veuillez entrer le titre du livre : ");
-	fgets(tempo, sizeof(tempo), stdin);
-	fflush(stdin);
+			printf("+============================================================\n");
+			printf("| ID : %d\n", book->id);
+			printf("| Titre : %s\n", book->title);
+			printf("| Auteur : %s\n", book->author);
+			printf("| Code : %s\n", code);
+			printf("| Nombre d'exemplaire : %d\n", book->effective);
+			printf("| Disponibles : %d\n", book->free);
+			printf("| Empruntes : %d\n", book->effective - book->free);
 
-	tempo[strlen(tempo) - 1] = '\0';
-	b->title = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
-	strcpy(b->title, tempo);
+			book = book->next;
+		} while (book != NULL);
 
-	printf("Veuillez entrer l'auteur du livre : ");
-	fgets(tempo, sizeof(tempo), stdin);
-	fflush(stdin);
+		printf("+============================================================\n\n");
+	}
 
-	tempo[strlen(tempo) - 1] = '\0';
-	b->author = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
-	strcpy(b->author, tempo);
-
-	// theme ta race
-
-	printf("Veuillez entrer le nombre d'exemplaire de ce livre : ");
-	scanf("%d", &b->effective);
-	b->free = b->effective;
-
-	// d_borrows ?
-
-	return b;
+	system("pause");
 }
-

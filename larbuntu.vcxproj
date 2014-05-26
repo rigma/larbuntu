@@ -70,7 +70,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <CompileAs>CompileAsC</CompileAs>
-      <PreprocessorDefinitions>_MBCS;_CRT_NO_SECURE_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_MBCS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -83,6 +83,7 @@
     <ClInclude Include="include\contact.h" />
     <ClInclude Include="include\db.h" />
     <ClInclude Include="include\dbio.h" />
+    <ClInclude Include="include\Interface.h" />
     <ClInclude Include="include\member.h" />
     <ClInclude Include="include\thema.h" />
     <ClInclude Include="include\utils.h" />
@@ -92,6 +93,7 @@
     <ClCompile Include="src\book.c" />
     <ClCompile Include="src\contact.c" />
     <ClCompile Include="src\db.c" />
+    <ClCompile Include="src\Interface.c" />
     <ClCompile Include="src\member.c" />
     <ClCompile Include="src\thema.c" />
     <ClCompile Include="src\utils.c" />

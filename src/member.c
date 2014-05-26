@@ -36,6 +36,102 @@ void member_free(member_t *member)
 	}
 }
 
+char member_add(member_db *db, member_t *member)
+{
+	member_t *previous = NULL, *next = NULL;
+	member_t **tmp = NULL;
+	unsigned int i = 0;
+
+	if (db == NULL || member == NULL)
+		return 0;
+
+	previous = (db->next == 0) ? NULL : db->members[db->next - 1];
+	next = (db->next >= db->size) ? NULL : db->members[db->next + 1];
+
+	if (previous != NULL)
+	{
+		previous->next = member;
+		member->previous = previous;
+	}
+
+	if (next != NULL)
+	{
+		next->previous = member;
+		member->next = next;
+	}
+
+	member->id = db->next;
+
+	if (db->size == 0)
+		db->first = member;
+
+	if (db->deleted == 0)
+	{
+		db->size++;
+		tmp = (member_t**)realloc(db->members, db->size * sizeof(member_t*));
+
+		if (tmp != NULL)
+			db->members = tmp;
+		else
+			return 0;
+
+		db->members[db->next] = member;
+		db->next = db->size;
+	}
+	else
+	{
+		db->members[db->next] = member;
+		db->deleted--;
+
+		for (i = 0; i < db->size; i++)
+		{
+			if (db->members[i] == NULL)
+			{
+				db->next = i;
+
+				break;
+			}
+		}
+
+		if (i == db->size)
+			db->next = db->size;
+	}
+
+	return 1;
+}
+
+char member_remove(member_db *db, unsigned int index)
+{
+	member_t *member = NULL, *previous = NULL, *next = NULL;
+
+	if (db == NULL || index >= db->size)
+		return 0;
+
+	member = db->members[index];
+
+	if (member == NULL)
+		return 0;
+	else
+	{
+		previous = member->previous;
+		next = member->next;
+
+		previous->next = next;
+		next->previous = previous;
+
+		db->members[index] = NULL;
+		member_free(member);
+
+		db->next = index;
+		db->deleted++;
+
+		if (db->size - db->deleted == 0)
+			db->first = NULL;
+	}
+
+	return 1;
+}
+
 member_t* member_register(member_t* member)
 {
 	member_t *m = NULL;
