@@ -145,23 +145,23 @@ book_t* book_register(book_t* book)
 	else
 		b = book;
 
+	fflush(stdin);
 	printf("Veuillez entrer le titre du livre : ");
 	fgets(tempo, sizeof(tempo), stdin);
-	fflush(stdin);
 
 	tempo[strlen(tempo) - 1] = '\0';
 	b->title = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
 	strcpy(b->title, tempo);
 
+	fflush(stdin);
 	printf("Veuillez entrer l'auteur du livre : ");
 	fgets(tempo, sizeof(tempo), stdin);
-	fflush(stdin);
 
 	tempo[strlen(tempo) - 1] = '\0';
 	b->author = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
 	strcpy(b->author, tempo);
 
-	// theme ta race
+	b->thema = thema_register(NULL);
 
 	printf("Veuillez entrer le nombre d'exemplaire de ce livre : ");
 	scanf("%d", &b->effective);

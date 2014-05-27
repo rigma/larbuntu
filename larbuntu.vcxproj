@@ -79,6 +79,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\larbuntu\include\Services.h" />
     <ClInclude Include="include\book.h" />
     <ClInclude Include="include\contact.h" />
     <ClInclude Include="include\db.h" />
@@ -89,6 +90,7 @@
     <ClInclude Include="include\utils.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\larbuntu\src\Services.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="src\book.c" />
     <ClCompile Include="src\contact.c" />

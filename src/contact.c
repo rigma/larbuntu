@@ -88,15 +88,19 @@ email_t* email_register(email_t *email)
 	email_t *e = NULL;
 	char id[200], hostname[200];
 
+	printf("\n --- Saisi de l'adresse courriel ---\n");
 	if (email == NULL)
 	{
+		fflush(stdin);
 		printf("Veuillez entrer l'identifiant de l'adresse mail : ");
 		fgets(id, sizeof(id), stdin);
-		fflush(stdin);
 
+		fflush(stdin);
 		printf("Veuillez entrer le domaine de l'adresse mail : ");
 		fgets(hostname, sizeof(id), stdin);
-		fflush(stdin);
+
+		id[strlen(id) - 1] = '\0';
+		hostname[strlen(hostname) - 1] = '\0';
 
 		e = email_init(id, hostname);
 	}
@@ -104,17 +108,19 @@ email_t* email_register(email_t *email)
 	{
 		e = email;
 
+		fflush(stdin);
 		printf("Veuillez entrer l'identifiant de l'adresse mail : ");
 		fgets(id, sizeof(id), stdin);
-		fflush(stdin);
-
+		
+		id[strlen(id) - 1] = '\0';
 		e->id = (char*) malloc((1 + strlen(id)) * sizeof(char));
 		strcpy(e->id, id);
 
+		fflush(stdin);
 		printf("Veuillez entrer le domaine de l'adresse mail : ");
 		fgets(hostname, sizeof(hostname), stdin);
-		fflush(stdin);
-
+		
+		hostname[strlen(hostname) - 1] = '\0';
 		e->hostname = (char*) malloc((1 + strlen(hostname)) * sizeof(char));
 		strcpy(e->hostname, hostname);
 	}
@@ -126,28 +132,30 @@ adress_t* adress_register(adress_t *adress)
 {
 	adress_t *a = NULL;
 	char city[200], pathname[200];
-	unsigned short number = 0;
-	unsigned int postal = 0;
+	static unsigned short number = 0;
+	static unsigned int postal = 0;
 	path_t type;
+
+	printf("\n --- Saisie de l'adresse ---\n");
 
 	if (adress == NULL)
 	{
 		printf("Veuillez entrer le numero de la rue : ");
 		scanf("%d", &number);
 
-		printf("Veuillez entrer le numero correspondant au type de rue\n(0 = Chemin ; 1 = Route ; 2 = Rue ; 3 = Avenue ; 4 = Boulevard ; 5 = Place)\n");
+		printf("Veuillez entrer le numero correspondant au type de rue\n(0 = Chemin ; 1 = Route ; 2 = Impasse ; 3 = Rue ; 4 = Avenue ; 5 = Boulevard; 6 = Place)\n");
 		scanf("%d", &type);
 
+		fflush(stdin);
 		printf("Veuillez entrer le nom du chemin : ");
 		fgets(pathname, sizeof(pathname), stdin);
-		fflush(stdin);
 
 		printf("Veuillez entrer le code postal : ");
 		scanf("%d", &postal);
 
+		fflush(stdin);
 		printf("Veuillez entrer la ville : ");
 		fgets(city, sizeof(city), stdin);
-		fflush(stdin);
 
 		pathname[strlen(pathname) - 1] = '\0';
 		city[strlen(city) - 1] = '\0';
@@ -188,5 +196,4 @@ adress_t* adress_register(adress_t *adress)
 	}
 
 	return a;
-
 }

@@ -77,13 +77,14 @@ int main(void)
 				{
 					system("cls");
 					fflush(stdin);
-					printf("Vous etes dans le menu d'interface. Veuillez entrer le nombre correspondant a\nl'action souhaitee.\n\n0) Affichage de la date\n1) Ajout d'un nouvel adherent ou d'un nouvea livre\n");
+					printf("Vous etes dans le menu d'interface. Veuillez entrer le nombre correspondant a\nl'action souhaitee.\n\n0) Affichage de la date\n1) Ajout d'un nouvel adherent ou d'un nouveau livre\n");
 					printf("2) Supression d'un adherent ou d'un livre\n3) Gestion des emprunts de livres\n4) Gestion des restitutions de livre\n5) Retour au menu principal\n\nVeuillez saisir votre choix : ");
 				} while (!scanf("%d", &menu) || (menu > 5) || (menu < 0));
 
 				switch (menu)
 				{
 				case 0:
+					system("cls");
 					time(&t);
 					info = localtime(&t);
 
@@ -92,7 +93,9 @@ int main(void)
 					break;
 
 				case 1:
-
+					system("cls");
+					interface_Capture(base);
+					system("pause");
 					break;
 
 				case 2:

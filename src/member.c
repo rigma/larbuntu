@@ -134,6 +134,7 @@ char member_remove(member_db *db, unsigned int index)
 
 member_t* member_register(member_t* member)
 {
+	system("cls");
 	member_t *m = NULL;
 	char tempo[200];
 
@@ -142,17 +143,19 @@ member_t* member_register(member_t* member)
 	else
 		m = member;
 
+	printf(" --- Saisi d'un nouveau membre ---\n");
+
+	fflush(stdin);
 	printf("Veuillez entrer le nom de l'adherent : ");
 	fgets(tempo, sizeof(tempo), stdin);
-	fflush(stdin);
-
+	
 	tempo[strlen(tempo) - 1] = '\0';
 	m->name = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
 	strcpy(m->name, tempo);
 
+	fflush(stdin);
 	printf("Veuillez entrer le prenom de l'adherent : ");
 	fgets(tempo, sizeof(tempo), stdin);
-	fflush(stdin);
 
 	tempo[strlen(tempo) - 1] = '\0';
 	m->forname = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
@@ -161,9 +164,9 @@ member_t* member_register(member_t* member)
 	m->adress = adress_register(NULL);
 	m->email = email_register(NULL);
 
+	fflush(stdin);
 	printf("Veuillez entrer la profession de l adherent : ");
 	fgets(tempo, sizeof(tempo), stdin);
-	fflush(stdin);
 	
 	tempo[strlen(tempo) - 1] = '\0';
 	m->profession = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
