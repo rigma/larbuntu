@@ -866,3 +866,69 @@ char member_freeDatabase(member_db *db)
 
 	return 1;
 }
+
+void member_displayDatabase(member_db *db)
+{
+	member_t *member = db->first;
+
+	if (member == NULL)
+		printf("Il n'y a aucun adherent enregistres dans la base de donnees.\n\n\n");
+	else
+	{
+		do
+		{
+
+			printf("+============================================================\n");
+			printf("| ID : %d\n", member->id);
+			printf("| Nom : %s\n", member->name);
+			printf("| Prenom : %s\n", member->forname);
+			printf("| Profession : %s\n", member->profession);
+			printf("| Adresse :\n");
+			
+			switch (member->adress->path)
+			{
+			case TRAIL:
+				printf("| %d, chemin %s \n", member->adress->number, member->adress->pathname);
+				break;
+			case ROAD:
+				printf("| %d, route %s \n", member->adress->number, member->adress->pathname);
+				break;
+			case DEADEND:
+				printf("| %d, impasse %s \n", member->adress->number, member->adress->pathname);
+				break;
+			case STREET:
+				printf("| %d, rue %s \n", member->adress->number, member->adress->pathname);
+				break;
+			case AVENUE:
+				printf("| %d, avenue %s \n", member->adress->number, member->adress->pathname);
+				break;
+			case BOULEVARD:
+				printf("| %d, boulevard %s \n", member->adress->number, member->adress->pathname);
+				break;
+			case PLACE:
+				printf("| %d, place %s \n", member->adress->number, member->adress->pathname);
+				break;
+			}
+
+			printf("| %.5d %s\n", member->adress->postal, member->adress->city);
+			printf("| Email : %s@%s\n", member->email->id, member->email->hostname);
+			printf("| Nombre de livres empruntes : %d\n", member->n_borrows);
+			printf("| Codes des livres empruntes : ");
+			if (member->borrows == NULL)
+				printf("pas de livre empruntes\n");
+
+			else
+			{
+				printf("%s\n", member->borrows);
+			}
+			
+
+			member = member->next;
+		} while (member != NULL);
+
+		printf("+============================================================\n\n");
+	}
+
+	system("pause");
+}
+

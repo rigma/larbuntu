@@ -110,4 +110,12 @@ char member_saveDatabase(member_db *db);
  */
 char member_freeDatabase(member_db *db);
 
+/**
+* @fn member_displayDatabase(member_db *db)
+* @brief Permet l'affichage de la liste de membre
+* @author Olivier NISOLE
+* @param member_db *db
+*/
+void member_displayDatabase(member_db *db);
+
 #endif

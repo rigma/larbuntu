@@ -48,7 +48,9 @@ int main(void)
 				switch (menu)
 				{
 				case 0:
-					printf("Affichage des adherents en cours\n");
+					system("cls");
+
+					member_displayDatabase(base->db_member);
 					break;
 
 				case 1:
@@ -60,8 +62,13 @@ int main(void)
 				case 2:
 					printf("Affichage date emprunt en cours\n");
 					break;
+
 				case 3:
-					printf("Recherche base de bonnee en cours\n");
+					printf("Adherent ayant depasse date\n");
+					break;
+
+				case 4:
+					printf("Recherche base de donnee en cours\n");
 					break;
 				case 5:
 					run2 = 0;
@@ -114,6 +121,7 @@ int main(void)
 					run2 = 0;
 					break;
 				}
+
 			} while (run2);
 
 		}

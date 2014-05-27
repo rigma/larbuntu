@@ -143,7 +143,8 @@ adress_t* adress_register(adress_t *adress)
 		printf("Veuillez entrer le numero de la rue : ");
 		scanf("%d", &number);
 
-		printf("Veuillez entrer le numero correspondant au type de rue\n(0 = Chemin ; 1 = Route ; 2 = Impasse ; 3 = Rue ; 4 = Avenue ; 5 = Boulevard; 6 = Place)\n");
+		printf("Veuillez entrer le numero correspondant au type de rue\n - 0 = Chemin\n - 1 = Route\n - 2 = Impasse\n - 3 = Rue\n - 4 = Avenue\n - 5 = Boulevard\n - 6 = Place\n\n");
+		printf("Veuillez entrer votre choix : ");
 		scanf("%d", &type);
 
 		fflush(stdin);
