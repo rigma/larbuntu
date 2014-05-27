@@ -41,18 +41,6 @@ char thema_add(thema_db *db, thema_t *thema)
 	previous = (db->next == 0) ? NULL : db->themas[db->next - 1];
 	next = (db->next >= db->size) ? NULL : db->themas[db->next + 1];
 
-	if (previous != NULL)
-	{
-		previous->next = thema;
-		thema->previous = previous;
-	}
-
-	if (next != NULL)
-	{
-		next->previous = thema;
-		thema->next = next;
-	}
-
 	// On vérifie que le thème n'existe pas déjà
 	current = (db->first != NULL) ? db->first : NULL;
 	while (current != NULL)
@@ -65,6 +53,18 @@ char thema_add(thema_db *db, thema_t *thema)
 		}
 
 		current = current->next;
+	}
+
+	if (previous != NULL)
+	{
+		previous->next = thema;
+		thema->previous = previous;
+	}
+
+	if (next != NULL)
+	{
+		next->previous = thema;
+		thema->next = next;
 	}
 
 	thema->id = db->next;
