@@ -31,12 +31,15 @@ void thema_free(thema_t *thema)
 
 char thema_add(thema_db *db, thema_t *thema)
 {
-	thema_t *previous = db->themas[db->next - 1], *next = db->themas[db->next + 1];
+	thema_t *previous = NULL, *next = NULL, *current = NULL;
 	thema_t **tmp = NULL;
 	unsigned int i = 0;
 
 	if (db == NULL || thema == NULL)
 		return 0;
+
+	previous = (db->next == 0) ? NULL : db->themas[db->next - 1];
+	next = (db->next >= db->size) ? NULL : db->themas[db->next + 1];
 
 	if (previous != NULL)
 	{
@@ -50,6 +53,20 @@ char thema_add(thema_db *db, thema_t *thema)
 		thema->next = next;
 	}
 
+	// On vérifie que le thème n'existe pas déjà
+	current = (db->first != NULL) ? db->first : NULL;
+	while (current != NULL)
+	{
+		if (!strcmp(thema->key, current->key))
+		{
+			printf("Theme deja present !\n");
+
+			return 0;
+		}
+
+		current = current->next;
+	}
+
 	thema->id = db->next;
 
 	if (db->size == 0)
@@ -58,7 +75,7 @@ char thema_add(thema_db *db, thema_t *thema)
 	if (db->deleted == 0)
 	{
 		db->size++;
-		tmp = (thema_t**) realloc(db->themas, db->size++ * sizeof(thema_t*));
+		tmp = (thema_t**) realloc(db->themas, db->size * sizeof(thema_t*));
 
 		if (tmp != NULL)
 			db->themas = tmp;
@@ -128,12 +145,13 @@ thema_t *thema_register(thema_t *thema)
 	char tmp[200] = { 0 };
 	char answer = 0;
 
-	if (t == NULL)
+	if (thema == NULL)
 	{
 		t = thema_init();
 
 		// Saisi de la clé du thème
-		printf("Saississez la clé du thème (3 caracteres maximum) : ");
+		fflush(stdin);
+		printf("Saississez la cle du theme (3 caracteres maximum) : ");
 		fgets(tmp, sizeof(tmp), stdin);
 
 		tmp[strlen(tmp) - 1] = '\0';
@@ -145,9 +163,9 @@ thema_t *thema_register(thema_t *thema)
 
 		// Affichage des informations courantes sur le thème à modifier
 		printf("Thème %d :\n", t->id);
-		printf("-----------------------------------------\n");
-		printf(" - Clé : %s\n", t->key);
-		printf("-----------------------------------------\n\n\n");
+		printf("+========================================\n");
+		printf("| - Clé : %s\n", t->key);
+		printf("+========================================\n\n\n");
 
 		do
 		{
@@ -597,7 +615,7 @@ char thema_freeDatabase(thema_db *db)
 			fwrite(buffer_int, sizeof(unsigned int), thema->size, f);
 
 			// Libération de l'élément
-			if (thema->next == NULL)
+			if (thema->next != NULL)
 				thema->next->previous = NULL;
 
 			thema_free(thema);
