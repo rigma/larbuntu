@@ -74,7 +74,7 @@ int main(void)
 					run2 = 0;
 					break;
 				}
-			} while (run2);
+			} while (run2 == 1);
 			
 		}
 		else if (menu == 1)
@@ -122,7 +122,7 @@ int main(void)
 					break;
 				}
 
-			} while (run2);
+			} while (run2 == 1);
 
 		}
 

@@ -112,7 +112,7 @@ char book_remove(book_db *db, unsigned int index)
 		return 0;
 	else
 	{
-		if (!thema_removeBook((thema_t*) book->thema, book))
+		if (book->thema == NULL || !thema_removeBook((thema_t*) book->thema, book))
 			return 0;
 
 		previous = book->previous;
@@ -136,6 +136,7 @@ char book_remove(book_db *db, unsigned int index)
 
 book_t* book_register(book_t* book)
 {
+	system("cls");
 	book_t *b = NULL;
 	char tempo[200];
 
@@ -167,7 +168,6 @@ book_t* book_register(book_t* book)
 	scanf("%d", &b->effective);
 	b->free = b->effective;
 
-	// d_borrows ?
 
 	return b;
 }
