@@ -138,8 +138,8 @@ book_t* book_register(book_t* book)
 {
 	system("cls");
 	book_t *b = NULL;
-	char tempo[200];
-
+	char tempo[200] = { 0 };
+	unsigned int i = 0;
 
 	if (book == NULL)
 		b = book_init();
@@ -162,12 +162,13 @@ book_t* book_register(book_t* book)
 	b->author = (char*)malloc((1 + strlen(tempo)) * sizeof(char));
 	strcpy(b->author, tempo);
 
-	b->thema = thema_register(NULL);
-
 	printf("Veuillez entrer le nombre d'exemplaire de ce livre : ");
 	scanf("%d", &b->effective);
 	b->free = b->effective;
 
+	b->d_borrows = (unsigned int*) malloc(b->effective * sizeof(unsigned int));
+	for (i = 0 ; i < b->effective ; i++)
+		b->d_borrows[i] = 0;
 
 	return b;
 }
@@ -612,7 +613,7 @@ void book_displayDatabase(book_db *db)
 	{
 		do
 		{
-			sprintf(code, "%s-%.3d", /*((thema_t*) book->thema)->key*/ "TRC", book->entry);
+			sprintf(code, "%s-%.3d", ((thema_t*) book->thema)->key, book->entry);
 
 			printf("+============================================================\n");
 			printf("| ID : %d\n", book->id);

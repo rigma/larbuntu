@@ -398,7 +398,9 @@ thema_db *thema_initDatabase(book_db *db_books, char *name)
 				for (j = 0 ; j < thema->size ; j++)
 				{
 					fread(&buffer_int, sizeof(unsigned int), 1, f);
+
 					thema->books[j] = db_books->books[buffer_int];
+					db_books->books[buffer_int]->thema = (void*) thema;
 				}
 
 				// Création des liens de l'élément au sein de la liste
