@@ -108,7 +108,7 @@ int main(void)
 
 				case 2:
 					system("cls");
-					interface_Delete();
+					interface_Delete(base);
 					system("pause");
 					break;
 

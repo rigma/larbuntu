@@ -77,12 +77,11 @@ void interface_Delete(db_t *db)
 {
 	member_t* member = NULL;
 	thema_t* thema = NULL;
-	book_t* book = NULL;
 	static char test = 0;
-	static char answer = 0;
 	static unsigned int id = 0;
-
-	
+	static char key[4] = { 0 }, tmp[4] = { 0 };
+	static char code[8] = { 0 };
+	static unsigned short i = 0;
 
 	do
 	{
@@ -93,35 +92,96 @@ void interface_Delete(db_t *db)
 
 	if (test == 0) //ecriture adherent
 	{
-
+		system("cls");
 		printf("Veuillez entrer l'ID de la personne a suprimmer (cette valeur est disponible dans l'affichage des adherents) : ");
-		scanf("%.10d", id);
+		scanf("%.10d", &id);
 		member = db->db_member->first;
 		while (member != NULL)
 		{
+
 			if (id == member->id)
 			{
 				do
 				{
 					printf("Voulez vous supprimmez les donnees concernant %s %s ?\n\n0 = Oui\n1 = Non\n\n Veuillez saisir votre reponse : ", member->name, member->forname);
-				} while (!scanf("%d", &answer) || (answer > 1) || (answer < 0));
-				if (answer == 0)
-				{
+				} while (!scanf("%d", &test) || (test > 1) || (test < 0));
 
+				if (test == 0)
 					member_remove(db->db_member, member->id);
-					// partie ou on sort de la boucle.
-				}
+
+				return;
 				
 			}
 			member = member->next;
 		}
 	}
-	else if (test == 1)
+	else if (test == 1) // supression theme
 	{
+		system("cls");
+		printf("Veuillez entrer la cle du theme a suprimmer (cette valeur est disponible dans l'affichage des themes) : ");
+		scanf("%s", key); 
+		fflush(stdin);
 
+		thema = db->db_thema->first;
+		while (thema != NULL)
+		{
+
+			if (!strcmp(key, thema->key))
+			{
+				do
+				{
+					printf("Voulez vous supprimmez les donnees concernant %s ?\n\n0 = Oui\n1 = Non\n\n Veuillez saisir votre reponse : ", thema->key);
+				} while (!scanf("%d", &test) || (test > 1) || (test < 0));
+
+				if (test == 0)
+					thema_remove(db->db_thema, thema->id);
+
+				return;
+
+			}
+			thema = thema->next;
+		}
 	}
-	else if (test == 2) // ecriture livre
+	else if (test == 2) // suppression du livre 
 	{
+		system("cls");
+		printf("Veuillez entrer le code du livre a supprimer (cette valeur est disponible dans l'affichage des livres) : ");
+		scanf("%s", code);
+		fflush(stdin);
 
+		strncpy(key, code, 3);
+		tmp[0] = code[4]; 
+		tmp[1] = code[5];
+		tmp[2] = code[6];
+
+		thema = db->db_thema->first;
+		while (thema != NULL)
+		{
+
+			if (!strcmp(key, thema->key))
+			{
+				for (i = 0; i < thema->size; i++)
+				{
+					if (thema->books[i]->entry == atoi(tmp))
+					{
+						do
+						{
+							printf("Voulez vous supprimmez les donnees concernant %s ?\n\n0 = Oui\n1 = Non\n\n Veuillez saisir votre reponse : ", thema->books[i]->title);
+						} while (!scanf("%d", &test) || (test > 1) || (test < 0));
+
+						if (test == 0)
+						{
+							book_remove(db->db_book, thema->books[i]->id);
+							break;
+						}
+
+					}
+				}
+
+				return;
+
+			}
+			thema = thema->next;
+		}
 	}
 }
