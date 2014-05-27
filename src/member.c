@@ -165,12 +165,15 @@ member_t* member_register(member_t* member)
 	m->email = email_register(NULL);
 
 	fflush(stdin);
-	printf("Veuillez entrer la profession de l adherent : ");
+	printf("Veuillez entrer la profession de l'adherent : ");
 	fgets(tempo, sizeof(tempo), stdin);
 	
 	tempo[strlen(tempo) - 1] = '\0';
 	m->profession = (char*) malloc((1 + strlen(tempo)) * sizeof(char));
 	strcpy(m->profession, tempo);
+
+	m->n_borrows = 0;
+	m->borrows = NULL;
 
 	return m;
 }
@@ -347,7 +350,7 @@ member_db *member_initDatabase(char *name)
 				fread(member->forname, sizeof(char), buffer_short, f);
 
 				// Lecture de l'adresse postale de l'adhérent
-				member->adress = adress_init(0, 0, "none", 0, "none");
+				member->adress = (adress_t*) malloc(sizeof(adress_t));
 				if (member->adress == NULL)
 				{
 					member_free(member);
@@ -366,18 +369,38 @@ member_db *member_initDatabase(char *name)
 				}
 
 				fread(&member->adress->number, sizeof(unsigned short), 1, f);
-				fread(&member->adress->path, sizeof(char), 1, f);
 				
+				fread(&buffer_char, sizeof(unsigned char), 1, f);
+
+				if (buffer_char == 0)
+					member->adress->path = TRAIL;
+				else if (buffer_char == 1)
+					member->adress->path = ROAD;
+				else if (buffer_char == 2)
+					member->adress->path = DEADEND;
+				else if (buffer_char == 3)
+					member->adress->path = STREET;
+				else if (buffer_char == 4)
+					member->adress->path = AVENUE;
+				else if (buffer_char == 5)
+					member->adress->path = BOULEVARD;
+				else if (buffer_char == 6)
+					member->adress->path = PLACE;
+
 				fread(&buffer_short, sizeof(unsigned short), 1, f);
+
+				member->adress->pathname = (char*) malloc(buffer_short * sizeof(char));
 				fread(member->adress->pathname, sizeof(char), buffer_short, f);
 
 				fread(&member->adress->postal, sizeof(unsigned int), 1, f);
 
 				fread(&buffer_short, sizeof(unsigned short), 1, f);
+
+				member->adress->city = (char*) malloc(buffer_short * sizeof(char));
 				fread(member->adress->city, sizeof(char), buffer_short, f);
 
 				// Lecture de l'adresse courriel de l'adhérent
-				member->email = email_init("none", "none");
+				member->email = (email_t*) malloc(sizeof(email_t));
 				if (member->email == NULL)
 				{
 					member_free(member);
@@ -396,9 +419,13 @@ member_db *member_initDatabase(char *name)
 				}
 
 				fread(&buffer_short, sizeof(unsigned short), 1, f);
+
+				member->email->id = (char*) malloc(buffer_short * sizeof(char));
 				fread(member->email->id, sizeof(char), buffer_short, f);
 
 				fread(&buffer_short, sizeof(unsigned short), 1, f);
+
+				member->email->hostname = (char*) malloc(buffer_short * sizeof(char));
 				fread(member->email->hostname, sizeof(char), buffer_short, f);
 
 				// Lecture de la profession de l'adhérent
@@ -420,6 +447,8 @@ member_db *member_initDatabase(char *name)
 
 					return NULL;
 				}
+
+				fread(member->profession, sizeof(char), buffer_short, f);
 
 				// Lecture et vérification du nombre d'emprunt
 				fread(&member->n_borrows, sizeof(unsigned char), 1, f);
@@ -461,11 +490,14 @@ member_db *member_initDatabase(char *name)
 					return NULL;
 				}
 
-				for (j = 0 ; j < member->n_borrows ; j++)
+				if (member->n_borrows > 0)
 				{
-					member->borrows[j] = (char*) malloc(BORROWS_CODE * sizeof(char));
-					
-					fread(member->borrows[i], sizeof(char), BORROWS_CODE, f);
+					for (j = 0; j < member->n_borrows; j++)
+					{
+						member->borrows[j] = (char*)malloc(BORROWS_CODE * sizeof(char));
+
+						fread(member->borrows[i], sizeof(char), BORROWS_CODE, f);
+					}
 				}
 
 				// Création des liens de la chaîne
@@ -499,6 +531,7 @@ char member_saveDatabase(member_db *db)
 	member_t *member = NULL;
 	char *filename = (char*) malloc((8 + strlen(db->name)) * sizeof(char));
 	unsigned int i = 0;
+	unsigned char j = 0;
 
 	// Tampons d'écriture
 	char *buffer_str = NULL;
@@ -576,7 +609,38 @@ char member_saveDatabase(member_db *db)
 
 			// Ecriture de l'adresse postale de l'adhérent
 			fwrite(&member->adress->number, sizeof(unsigned short), 1, f);
-			fwrite(&member->adress->path, sizeof(char), 1, f);
+			
+			switch (member->adress->path)
+			{
+			case TRAIL:
+				buffer_char = 0;
+				break;
+
+			case ROAD:
+				buffer_char = 1;
+				break;
+
+			case DEADEND:
+				buffer_char = 2;
+				break;
+
+			case STREET:
+				buffer_char = 3;
+				break;
+
+			case AVENUE:
+				buffer_char = 4;
+				break;
+
+			case BOULEVARD:
+				buffer_char = 5;
+				break;
+
+			case PLACE:
+				buffer_char = 6;
+			}
+
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
 
 			buffer_short = strlen(member->adress->pathname) + 1;
 			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
@@ -589,11 +653,11 @@ char member_saveDatabase(member_db *db)
 			fwrite(member->adress->city, sizeof(char), buffer_short, f);
 
 			// Ecriture de l'adresse courriel de l'adhérent
-			buffer_short = strlen(member->email->id);
+			buffer_short = strlen(member->email->id) + 1;
 			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
 			fwrite(member->email->id, sizeof(char), buffer_short, f);
 
-			buffer_short = strlen(member->email->hostname);
+			buffer_short = strlen(member->email->hostname) + 1;
 			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
 			fwrite(member->email->hostname, sizeof(char), buffer_short, f);
 
@@ -601,6 +665,20 @@ char member_saveDatabase(member_db *db)
 			buffer_short = strlen(member->profession) + 1;
 			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
 			fwrite(member->profession, sizeof(char), buffer_short, f);
+
+			// Ecriture des emprunts
+			fwrite(&member->n_borrows, sizeof(unsigned char), 1, f);
+			
+			if (member->n_borrows > 0)
+			{
+				for (j = 0 ; j < member->n_borrows ; j++)
+				{
+					buffer_char = strlen(member->borrows[j]) + 1;
+
+					fwrite(&buffer_char, sizeof(unsigned char), 1, f);
+					fwrite(member->borrows[j], sizeof(char), buffer_char, f);
+				}
+			}
 		}
 	}
 
@@ -619,6 +697,7 @@ char member_freeDatabase(member_db *db)
 	member_t *member = NULL;
 	char *filename = (char*) malloc((8 + strlen(db->name)) * sizeof(char));
 	unsigned int i = 0;
+	unsigned char j = 0;
 
 	// Tampons d'écriture
 	char *buffer_str = NULL;
@@ -696,7 +775,38 @@ char member_freeDatabase(member_db *db)
 
 			// Ecriture de l'adresse postale de l'adhérent
 			fwrite(&member->adress->number, sizeof(unsigned short), 1, f);
-			fwrite(&member->adress->path, sizeof(char), 1, f);
+
+			switch (member->adress->path)
+			{
+			case TRAIL:
+				buffer_char = 0;
+				break;
+
+			case ROAD:
+				buffer_char = 1;
+				break;
+
+			case DEADEND:
+				buffer_char = 2;
+				break;
+
+			case STREET:
+				buffer_char = 3;
+				break;
+
+			case AVENUE:
+				buffer_char = 4;
+				break;
+
+			case BOULEVARD:
+				buffer_char = 5;
+				break;
+
+			case PLACE:
+				buffer_char = 6;
+			}
+
+			fwrite(&buffer_char, sizeof(unsigned char), 1, f);
 
 			buffer_short = strlen(member->adress->pathname) + 1;
 			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
@@ -709,11 +819,11 @@ char member_freeDatabase(member_db *db)
 			fwrite(member->adress->city, sizeof(char), buffer_short, f);
 
 			// Ecriture de l'adresse courriel de l'adhérent
-			buffer_short = strlen(member->email->id);
+			buffer_short = strlen(member->email->id) + 1;
 			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
 			fwrite(member->email->id, sizeof(char), buffer_short, f);
 
-			buffer_short = strlen(member->email->hostname);
+			buffer_short = strlen(member->email->hostname) + 1;
 			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
 			fwrite(member->email->hostname, sizeof(char), buffer_short, f);
 
@@ -722,8 +832,22 @@ char member_freeDatabase(member_db *db)
 			fwrite(&buffer_short, sizeof(unsigned short), 1, f);
 			fwrite(member->profession, sizeof(char), buffer_short, f);
 
+			// Ecriture des emprunts
+			fwrite(&member->n_borrows, sizeof(unsigned char), 1, f);
+
+			if (member->n_borrows > 0)
+			{
+				for (j = 0; j < member->n_borrows; j++)
+				{
+					buffer_char = strlen(member->borrows[j]) + 1;
+
+					fwrite(&buffer_char, sizeof(unsigned char), 1, f);
+					fwrite(member->borrows[j], sizeof(char), buffer_char, f);
+				}
+			}
+
 			// Suppression des liens
-			if (member->next == NULL)
+			if (member->next != NULL)
 				member->next->previous = NULL;
 
 			member_free(member);

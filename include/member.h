@@ -55,14 +55,14 @@ member_t *member_init();
 void member_free(member_t *member);
 
 /**
-* @fn member_add(member_db *db, member_t *book)
+* @fn member_add(member_db *db, member_t *member)
 * @brief Ajoute un membre dans la base de données des mebres au prochain index libre
 * @author Romain FAILLA
 * @param member_db *db : la base de données des membres
-* @param member_t *membre : le livre à ajouter
+* @param member_t *member : le livre à ajouter
 * @return char
 */
-char member_add(member_db *db, member_t *book);
+char member_add(member_db *db, member_t *member);
 
 /**
 * @fn member_remove(member_db *db, unsigned int id)
