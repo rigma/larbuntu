@@ -879,7 +879,7 @@ void member_displayDatabase(member_db *db)
 		{
 
 			printf("+============================================================\n");
-			printf("| ID : %d\n", member->id);
+			printf("| ID : %.10d\n", member->id);
 			printf("| Nom : %s\n", member->name);
 			printf("| Prenom : %s\n", member->forname);
 			printf("| Profession : %s\n", member->profession);

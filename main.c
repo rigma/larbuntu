@@ -107,7 +107,9 @@ int main(void)
 					break;
 
 				case 2:
-					printf("Supression d'un adherent ou d'un livre en cours\n");
+					system("cls");
+					interface_Delete();
+					system("pause");
 					break;
 
 				case 3:

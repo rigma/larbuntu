@@ -72,3 +72,56 @@ void interface_Capture(db_t *db)
 		free(available);
 	}
 }
+
+void interface_Delete(db_t *db)
+{
+	member_t* member = NULL;
+	thema_t* thema = NULL;
+	book_t* book = NULL;
+	static char test = 0;
+	static char answer = 0;
+	static unsigned int id = 0;
+
+	
+
+	do
+	{
+		fflush(stdin);
+		printf("Que voulez-vous supprimmer?\n\n0) Un adherent\n1) Un theme\n2) Un livre\n\n");
+		printf("Veuillez saisir votre reponse : ");
+	} while (!scanf("%d", &test) || (test > 2) || (test < 0));
+
+	if (test == 0) //ecriture adherent
+	{
+
+		printf("Veuillez entrer l'ID de la personne a suprimmer (cette valeur est disponible dans l'affichage des adherents) : ");
+		scanf("%.10d", id);
+		member = db->db_member->first;
+		while (member != NULL)
+		{
+			if (id == member->id)
+			{
+				do
+				{
+					printf("Voulez vous supprimmez les donnees concernant %s %s ?\n\n0 = Oui\n1 = Non\n\n Veuillez saisir votre reponse : ", member->name, member->forname);
+				} while (!scanf("%d", &answer) || (answer > 1) || (answer < 0));
+				if (answer == 0)
+				{
+
+					member_remove(db->db_member, member->id);
+					// partie ou on sort de la boucle.
+				}
+				
+			}
+			member = member->next;
+		}
+	}
+	else if (test == 1)
+	{
+
+	}
+	else if (test == 2) // ecriture livre
+	{
+
+	}
+}
