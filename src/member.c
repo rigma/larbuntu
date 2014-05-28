@@ -116,8 +116,15 @@ char member_remove(member_db *db, unsigned int index)
 		previous = member->previous;
 		next = member->next;
 
-		previous->next = next;
-		next->previous = previous;
+		if (previous != NULL && next != NULL)
+		{
+			previous->next = next;
+			next->previous = previous;
+		}
+		else if (next != NULL)
+			next->previous = NULL;
+		else if (previous != NULL)
+			previous->next = NULL;
 
 		db->members[index] = NULL;
 		member_free(member);

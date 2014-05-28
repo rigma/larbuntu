@@ -118,8 +118,15 @@ char book_remove(book_db *db, unsigned int index)
 		previous = book->previous;
 		next = book->next;
 
-		previous->next = next;
-		next->previous = previous;
+		if (previous != NULL && next != NULL)
+		{
+			previous->next = next;
+			next->previous = previous;
+		}
+		else if (next != NULL)
+			next->previous = NULL;
+		else if (previous != NULL)
+			previous->next = NULL;
 
 		db->books[index] = NULL;
 		book_free(book);

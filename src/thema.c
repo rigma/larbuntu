@@ -123,8 +123,15 @@ char thema_remove(thema_db *db, unsigned int index)
 		previous = thema->previous;
 		next = thema->next;
 
-		previous->next = next;
-		next->previous = previous;
+		if (previous != NULL && next != NULL)
+		{
+			previous->next = next;
+			next->previous = previous;
+		}
+		else if (next != NULL)
+			next->previous = NULL;
+		else if (previous != NULL)
+			previous->next = NULL;
 
 		db->themas[index] = NULL;
 		thema_free(thema);
@@ -250,7 +257,9 @@ char thema_removeBook(thema_t *thema, book_t *book)
 	}
 
 	free(thema->books);
+
 	thema->books = tmp;
+	thema->size = size;
 
 	return 1;
 }

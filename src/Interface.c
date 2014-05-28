@@ -94,7 +94,8 @@ void interface_Delete(db_t *db)
 	{
 		system("cls");
 		printf("Veuillez entrer l'ID de la personne a suprimmer (cette valeur est disponible dans l'affichage des adherents) : ");
-		scanf("%.10d", &id);
+		scanf("%d", &id);
+
 		member = db->db_member->first;
 		while (member != NULL)
 		{
