@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 
 void interface_Capture(db_t *db)
 {
@@ -184,5 +185,111 @@ void interface_Delete(db_t *db)
 			}
 			thema = thema->next;
 		}
+	}
+}
+
+void interface_Borrow(db_t *db)
+{
+	book_t *book = NULL;
+	member_t* member = NULL;
+	thema_t* thema = NULL;
+
+	static char test = 0;
+	static unsigned int id = 0;
+	static unsigned char duration = 0;
+	static unsigned short i = 0;
+	static unsigned int j = 0;
+
+	static char key[4] = { 0 }, tmp[4] = { 0 }, entry[3] = { 0 };
+	static char code[10] = { 0 };
+
+	printf("Veuillez entrer l'ID de la personne souhaitant emprunter un livre (cette valeur est disponible dans l'affichage des adherents) : ");
+	scanf("%d", &id);
+
+	printf("Veuillez entrer la cle du theme du livre emprunter (cette valeur est disponible dans l'affichage des themes) : ");
+	scanf("%s", key);
+	fflush(stdin);
+
+	member = db->db_member->first;
+	thema = db->db_thema->first;
+	strncpy(key, code, 3);
+	tmp[0] = code[4];
+	tmp[1] = code[5];
+	tmp[2] = code[6];
+
+	while (member != NULL)
+	{
+
+		if (id == member->id)
+		{
+			do
+			{
+				printf("Est-ce bien %s %s qui souhaite emprunter un livre ??\n\n0 = Oui\n1 = Non\n\n Veuillez saisir votre reponse : ", member->name, member->forname);
+			} while (!scanf("%d", &test) || (test > 1) || (test < 0));
+
+			if (test == 0)
+			{
+				if (member->n_borrows == MAX_BORROWS_MEMBER)
+					printf("Ce membre a deja atteint le nombre maximal d'emprunt.\n");
+				else
+				{
+					while (thema != NULL)
+					{
+						if (!strcmp(key, thema->key))
+						{
+							for (i = 0 ; i < thema->size ; i++)
+							{
+								if (thema->books[i]->entry == atoi(tmp))
+								{
+									do
+									{
+										printf("Est-ce %s que l'adherent souhaite emprunter ?\n\n0 = Oui\n1 = Non\n\n Veuillez saisir votre reponse : ", thema->books[i]->title);
+									} while (!scanf("%d", &test) || (test > 1) || (test < 0));
+
+									if (test == 0 && thema->books[i]->free > 0)
+									{
+										book = thema->books[i];
+
+										for (j = 0; j < book->effective; j++)
+										{
+											if (book->d_borrows[j] == 0)
+											{
+												do
+												{
+													fflush(stdin);
+													printf("Duree de l'emprunt (15 jours maximum) : ");
+												} while (!scanf("%d", &duration) || duration > 15);
+
+												book->d_borrows[j] = time(NULL) + duration * 24 * 3600;
+
+												break;
+											}
+										}
+										
+										sprintf(entry, "-%d", j);
+										strcat(code, entry);
+										strcpy(member->borrows[member->n_borrows], code);
+
+										book->free--;
+										member->n_borrows++;
+
+										break;
+									}
+
+								}
+							}
+
+							return;
+						}
+
+						thema = thema->next;
+					}
+				}
+			}
+
+			return;
+
+		}
+		member = member->next;
 	}
 }

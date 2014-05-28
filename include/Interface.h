@@ -18,4 +18,12 @@ void interface_Capture(db_t *db);
 * @param db_t *db : l'ensemble des données
 */
 void interface_Delete(db_t *db);
+
+/**
+* @fn interface_Borrow()
+* @brief gestion emprunt des livres
+* @author Olivier NISOLE
+* @param db_t *db
+*/
+void interface_Borrow(db_t *db);
 #endif

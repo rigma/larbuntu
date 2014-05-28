@@ -113,7 +113,9 @@ int main(void)
 					break;
 
 				case 3:
-					printf("Gestion des emprunts en cours\n");
+					system("cls");
+					interface_Borrow(base);
+					system("pause");
 					break;
 
 				case 4:
